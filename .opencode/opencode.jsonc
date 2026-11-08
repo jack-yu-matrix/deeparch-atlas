@@ -1,0 +1,62 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": [
+    "superpowers@git+https://github.com/obra/superpowers.git",
+    "opencode-skill-creator"
+  ],
+  "enabled_providers": [
+    "beacon"
+  ],
+  "provider": {
+    "beacon": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "BEACON LLM",
+      "options": {
+        "baseURL": "http://localhost:18080/v1"
+      },
+      "models": {
+        "deepseek-v4-pro": {
+          "name": "deepseek-v4-pro",
+          "limit": {
+            "context": 1000000,
+            "output": 384000
+          },
+          // This is very important for openai-compatible client
+          "capabilities": {
+            "interleaved": {
+              "field": "reasoning_content"
+            }
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budgetTokens": 8192
+            }
+          }
+        },
+        "glm-5.1": {
+          "name": "glm-5.1",
+          "limit": {
+            "context": 200000,
+            "output": 131072
+          }
+        },
+        "glm-5": {
+          "name": "glm-5",
+          "limit": {
+            "context": 204800,
+            "output": 131072
+          }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "servers": {
+      "astro-docs": {
+        "type": "remote",
+        "url": "https://mcp.docs.astro.build/mcp"
+      }
+    }
+  }
+}
