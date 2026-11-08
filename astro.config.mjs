@@ -13,11 +13,13 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Smart Custom Service',
-					items:[{ autogenerate: { directory: 'smart-customer-service' } }],
+					items: [
+						{ label: 'Solution Architecture', link: '/smart-customer-service' },
+					],
 				},
 				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
+					label: 'Guides',
+					items: [{ autogenerate: { directory: 'guides' } }],
 				},
 			],
 		}),
