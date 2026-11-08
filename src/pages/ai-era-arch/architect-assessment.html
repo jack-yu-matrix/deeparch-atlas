@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Strategic / Lead Digital &amp; AI Solution Architect — Interview Assessment</title>
+<style>
+:root{--ink:#172033;--muted:#667085;--line:#dce2ea;--bg:#f4f6f9;--card:#fff;--blue:#2457a7;--blue2:#eaf1fc;--green:#18794e;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+header{background:#14233d;color:white;padding:24px max(20px,calc((100vw - 1200px)/2))}header h1{font-size:23px;margin:0 0 6px}header p{margin:0;color:#cbd5e1}
+main{max-width:1200px;margin:22px auto;padding:0 18px 50px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+button,.btn{border:1px solid var(--line);background:white;color:var(--ink);padding:9px 13px;border-radius:8px;cursor:pointer;font:inherit}button.primary{background:var(--blue);border-color:var(--blue);color:white}button.danger{color:var(--red)}button:hover{filter:brightness(.97)}
+.panel,.competency,.scenario{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px;box-shadow:0 2px 6px #15233b08}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}.muted,.hint{color:var(--muted)}.hint{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:4px}.field label{font-size:12px;color:var(--muted);font-weight:650}
+input,textarea,select{width:100%;border:1px solid #cfd6e0;border-radius:7px;padding:9px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:84px;resize:vertical}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:12px}.stat b{display:block;font-size:22px}
+.competency{scroll-margin-top:10px}.comphead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.weight{background:var(--blue2);color:var(--blue);padding:4px 9px;border-radius:20px;font-weight:700;white-space:nowrap}
+.compdesc{color:#475467;margin:5px 0 12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:11px}.box h4{margin:0 0 6px;font-size:13px}.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.rubric{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:10px 0}.level{border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff;cursor:pointer;text-align:left}.level strong{display:block;color:var(--blue);margin-bottom:4px}.level small{display:block;color:#475467;font-size:11px;line-height:1.4}.level.selected{border:2px solid var(--blue);background:var(--blue2);padding:8px}
+.ratingline{display:flex;align-items:center;gap:8px;margin-top:8px}.ratingline select{max-width:220px}.evidence{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.scenario h3{margin-bottom:6px}.scenario ol{padding-left:20px}.scenario li{margin:4px 0}
+#radar{width:100%;max-width:520px;display:block;margin:auto}.radarwrap{display:grid;grid-template-columns:minmax(280px,1fr) minmax(240px,.8fr);gap:18px;align-items:center}
+#radarLegend{font-size:12px;color:var(--muted)}.legenditem{display:flex;justify-content:space-between;border-bottom:1px solid #edf0f4;padding:5px 0}
+.progress{height:8px;background:#e8edf4;border-radius:10px;overflow:hidden}.progress span{display:block;height:100%;background:var(--blue);width:0}
+.feedback{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
+.note{border-left:3px solid #e0a43a;background:#fff9eb;padding:10px 12px;color:#694b16;border-radius:4px}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+@media(max-width:760px){.grid,.two,.evidence,.feedback,.radarwrap{grid-template-columns:1fr}.rubric{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header h1{font-size:19px}.comphead{flex-direction:column}}
+@media print{body{background:white;font-size:11px}header{background:#14233d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}main{max-width:none;margin:0;padding:10px}.toolbar,.no-print{display:none!important}.panel,.competency,.scenario{box-shadow:none;break-inside:avoid;margin-bottom:8px;padding:12px}.rubric{grid-template-columns:repeat(5,1fr)}textarea{min-height:55px}.level{padding:5px}.level small{font-size:9px}}
+</style>
+</head>
+<body>
+<header><h1>Strategic / Lead Digital &amp; AI Solution Architect</h1><p>结构化面试评估工具 · Evidence-based · Strategic over Tactical · Production over PoC</p></header>
+<main>
+<div class="toolbar no-print">
+<button class="primary" onclick="window.print()">打印 / 保存 PDF</button><button class="primary" onclick="saveUpdatedHTML()">保存并分享更新版 HTML</button><button onclick="exportJSON()">导出 JSON</button><button onclick="exportTXT()">导出招聘反馈 TXT</button><button class="danger" onclick="resetAll()">清空并重新评估</button>
+</div>
+<p class="hint no-print" style="margin:-7px 0 14px">“保存并分享更新版 HTML”会下载一个包含当前候选人信息、评分、STAR 证据和面试反馈的独立 HTML 文件。将该文件发送给下一位面试官，对方打开后会自动看到已填写内容，可继续补充并再次保存为新版本。</p>
+<section class="panel">
+<h2>Candidate &amp; Interview Information</h2>
+<div class="grid">
+<div class="field"><label>Candidate Name</label><input id="candidate" placeholder="候选人姓名"></div>
+<div class="field"><label>Interviewer</label><input id="interviewer" placeholder="面试官"></div>
+<div class="field"><label>Interview Date</label><input id="date" type="date"></div>
+<div class="field"><label>Position / Level</label><input id="position" placeholder="Strategic / Lead Architect"></div>
+<div class="field"><label>Client / Industry</label><input id="client" placeholder="客户、行业"></div>
+<div class="field"><label>Project Context</label><input id="context" placeholder="项目背景 / 规模 / 复杂度"></div>
+<div class="field"><label>Interview Round</label><select id="round"><option>Technical / Architecture</option><option>Strategic / Leadership</option><option>Final</option><option>Other</option></select></div>
+<div class="field"><label>Interview Duration</label><input id="duration" placeholder="例如：90 minutes"></div>
+<div class="field"><label>Assessment Version</label><input value="AI-era Competency Framework v1.0" readonly=""></div>
+</div>
+</section>
+<section class="panel">
+<h2>Assessment Overview</h2>
+<div class="stats">
+<div class="stat"><span class="muted">已评分维度</span><b id="rated">0 / 10</b></div>
+<div class="stat"><span class="muted">加权得分</span><b id="score">—</b><small class="muted">满分 5.00</small></div>
+<div class="stat"><span class="muted">百分制得分</span><b id="percent">—</b><small class="muted">按已评分权重归一化</small></div>
+<div class="stat"><span class="muted">录用建议参考</span><b id="recommend" style="font-size:16px">待评估</b><small class="muted">不可替代面试官判断</small></div>
+</div>
+<p class="hint">综合得分仅按已评分维度权重归一化；所有维度完成后才代表完整的 100% 权重评分。战略级岗位建议同时审查关键维度门槛和证据质量。</p>
+<div class="progress"><span id="progress" style="width: 0%;"></span></div>
+</section>
+<section class="panel">
+<h2>Skill Radar — 能力雷达图</h2>
+<div class="radarwrap"><svg id="radar" viewBox="0 0 520 450" role="img" aria-label="能力雷达图"><polygon points="260,187 278.2213428210667,192.92047317437664 289.48275200514973,208.42047317437664 289.48275200514973,227.57952682562336 278.2213428210667,243.07952682562336 260,249 241.77865717893334,243.07952682562336 230.51724799485024,227.57952682562336 230.51724799485024,208.42047317437664 241.77865717893332,192.92047317437664" fill="none" stroke="#d7dee8" stroke-width="1"></polygon><polygon points="260,156 296.4426856421333,167.84094634875325 318.9655040102995,198.84094634875325 318.9655040102995,237.15905365124675 296.4426856421333,268.1590536512467 260,280 223.5573143578667,268.1590536512467 201.03449598970047,237.15905365124675 201.03449598970047,198.84094634875328 223.55731435786666,167.84094634875328" fill="none" stroke="#d7dee8" stroke-width="1"></polygon><polygon points="260,125 314.6640284632,142.7614195231299 348.44825601544926,189.2614195231299 348.44825601544926,246.7385804768701 314.6640284632,293.2385804768701 260,311 205.3359715368,293.2385804768701 171.55174398455074,246.7385804768701 171.5517439845507,189.26141952312992 205.3359715368,142.76141952312992" fill="none" stroke="#d7dee8" stroke-width="1"></polygon><polygon points="260,94 332.8853712842667,117.68189269750651 377.93100802059905,179.68189269750653 377.93100802059905,256.3181073024935 332.8853712842667,318.3181073024935 260,342 187.11462871573335,318.3181073024935 142.06899197940095,256.3181073024935 142.06899197940095,179.68189269750653 187.11462871573332,117.68189269750653" fill="none" stroke="#d7dee8" stroke-width="1"></polygon><polygon points="260,63 351.10671410533337,92.60236587188315 407.4137600257488,170.10236587188314 407.4137600257488,265.89763412811686 351.10671410533337,343.39763412811686 260,373 168.8932858946667,343.39763412811686 112.58623997425121,265.89763412811686 112.58623997425119,170.10236587188317 168.89328589466663,92.60236587188317" fill="none" stroke="#d7dee8" stroke-width="1"></polygon><line x1="260" y1="218" x2="260" y2="63" stroke="#d7dee8"></line><text x="260" y="32" font-size="10" text-anchor="middle" fill="#475467">1.业务与战略思维</text><line x1="260" y1="218" x2="351.10671410533337" y2="92.60236587188315" stroke="#d7dee8"></line><text x="369.3280569264" y="67.52283904625978" font-size="10" text-anchor="middle" fill="#475467">2.数字化解决方案架构</text><line x1="260" y1="218" x2="407.4137600257488" y2="170.10236587188314" stroke="#d7dee8"></line><text x="436.8965120308985" y="160.52283904625978" font-size="10" text-anchor="middle" fill="#475467">3.AI / LLM 架构</text><line x1="260" y1="218" x2="407.4137600257488" y2="265.89763412811686" stroke="#d7dee8"></line><text x="436.8965120308985" y="275.4771609537402" font-size="10" text-anchor="middle" fill="#475467">4.AI 原生软件工程转型</text><line x1="260" y1="218" x2="351.10671410533337" y2="343.39763412811686" stroke="#d7dee8"></line><text x="369.3280569264" y="368.4771609537402" font-size="10" text-anchor="middle" fill="#475467">5.云、数据与平台工程</text><line x1="260" y1="218" x2="260" y2="373" stroke="#d7dee8"></line><text x="260" y="404" font-size="10" text-anchor="middle" fill="#475467">6.LLMOps 与 AI 工程</text><line x1="260" y1="218" x2="168.8932858946667" y2="343.39763412811686" stroke="#d7dee8"></line><text x="150.6719430736" y="368.4771609537402" font-size="10" text-anchor="middle" fill="#475467">7.企业架构与治理</text><line x1="260" y1="218" x2="112.58623997425121" y2="265.89763412811686" stroke="#d7dee8"></line><text x="83.10348796910145" y="275.4771609537402" font-size="10" text-anchor="middle" fill="#475467">8.AI 安全与可信 AI</text><line x1="260" y1="218" x2="112.58623997425119" y2="170.10236587188317" stroke="#d7dee8"></line><text x="83.10348796910142" y="160.5228390462598" font-size="10" text-anchor="middle" fill="#475467">9.咨询能力与领导力</text><line x1="260" y1="218" x2="168.89328589466663" y2="92.60236587188317" stroke="#d7dee8"></line><text x="150.67194307359998" y="67.5228390462598" font-size="10" text-anchor="middle" fill="#475467">10.创新与价值实现</text><circle cx="260" cy="202.5" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="269.1106714105333" cy="205.46023658718832" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="274.7413760025749" cy="213.21023658718832" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="274.7413760025749" cy="222.78976341281168" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="269.1106714105333" cy="230.53976341281168" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="260" cy="233.5" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="250.88932858946666" cy="230.53976341281168" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="245.25862399742513" cy="222.78976341281168" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="245.2586239974251" cy="213.21023658718832" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle><circle cx="250.88932858946666" cy="205.46023658718832" r="4" fill="white" stroke="#98a2b3" stroke-width="1.5"></circle></svg><div id="radarLegend"><p class="muted">未评分维度显示为空心标记，不按零分处理。评分后实时更新。</p><div id="legendRows"><div class="legenditem"><span>1. 业务与战略思维</span><b>未评分</b></div><div class="legenditem"><span>2. 数字化解决方案架构</span><b>未评分</b></div><div class="legenditem"><span>3. AI / LLM 架构</span><b>未评分</b></div><div class="legenditem"><span>4. AI 原生软件工程转型</span><b>未评分</b></div><div class="legenditem"><span>5. 云、数据与平台工程</span><b>未评分</b></div><div class="legenditem"><span>6. LLMOps 与 AI 工程</span><b>未评分</b></div><div class="legenditem"><span>7. 企业架构与治理</span><b>未评分</b></div><div class="legenditem"><span>8. AI 安全与可信 AI</span><b>未评分</b></div><div class="legenditem"><span>9. 咨询能力与领导力</span><b>未评分</b></div><div class="legenditem"><span>10. 创新与价值实现</span><b>未评分</b></div></div></div></div>
+</section>
+<div id="competencies"></div>
+<section class="panel">
+<h2>Scenario-based Assessment — 三类核心情景题</h2>
+<div class="scenario"><h3>场景 A：AI-native SDLC Enterprise Transformation</h3>
+<p>某大型企业已有 Jira、GitHub、CI/CD、测试平台和传统研发管理体系。企业希望在 6–12 个月内通过 AI Agents 重塑研发全生命周期。请设计转型方案。</p>
+<ol><li>Plan / Design：如何将需求、业务意图转化为 intent.md、specification、plan，并实现可追溯？</li><li>Build：如何设计 Agentic Coding、Subagents、并行工作流、Agent Skills、Hooks 和 Context Engineering？</li><li>Test：如何建立反馈闭环、Continuous Evals、测试数据集、质量门禁？模型、Prompt、Skill、Hook 变化如何回归？</li><li>Deploy：如何设计 PR Review、CI/CD 集成、权限隔离、Human Approval、灰度和回滚？</li><li>Maintain：如何让生产监控、事件和业务指标触发诊断、生成新 Intent 并进入下一轮改进？</li><li>组织：研发人员、QA、架构师、平台团队、产品经理的职责如何变化？如何培训和管理变革？</li><li>度量：如何定义 Lead / Lag 指标？至少给出交付周期、吞吐量、缺陷逃逸率、返工率、Agent 成功率、人工审核负荷和单位变更成本的基线与目标。</li></ol>
+<div class="box"><h4>必须深挖的证据</h4>候选人亲自负责的团队/仓库数量、改造前后流程图、Agent 工作流、Skills / Hooks 示例、Evals 数据集、CI 记录、生产发布记录、质量和效率数据、失败案例与回滚机制。</div>
+</div>
+<div class="scenario"><h3>场景 B：Enterprise AI / LLM Architecture</h3>
+<p>大型企业建设统一 AI Platform，服务多个业务域的 RAG、Agent 和企业知识助手。请画出端到端架构并解释关键决策。</p>
+<ol><li>模型层：Model Selection、Model Routing、大小模型分层、私有化与云 API 的 Build / Buy 权衡。</li><li>知识层：数据接入、权限继承、解析、Chunking、Embedding、Hybrid Search、Reranking、知识更新与删除。</li><li>Agent 层：Agent Loop、Tool Calling、MCP / API、Workflow 与自主 Agent 边界、状态和记忆。</li><li>Context：上下文构建、压缩、检索、窗口预算、来源溯源和上下文污染防护。</li><li>LLMOps：离线/在线评测、数据集、Prompt / Model / Agent 版本、Tracing、质量回归。</li><li>安全：身份透传、租户隔离、行/文档级权限、Prompt Injection、工具最小权限、Sandbox、审批和审计。</li><li>非功能：吞吐、延迟、可用性、成本、缓存、降级、灾备和供应商切换。</li></ol>
+<div class="box"><h4>必须深挖的证据</h4>生产架构图、RAG 评测集、检索质量指标、模型路由策略、Agent Trace、权限测试、成本报表、SLO、故障复盘和安全威胁模型。</div>
+</div>
+<div class="scenario"><h3>场景 C：AI-driven Business Transformation</h3>
+<p>客户高管提出“全面引入 AI”，但没有明确业务价值和实施路线。请从咨询到规模化落地设计完整方案。</p>
+<ol><li>如何通过访谈、流程挖掘、价值链分析识别高价值 Use Cases？如何避免从技术找场景？</li><li>如何量化价值：收入增长、成本节约、周期缩短、风险降低、体验提升？基线由谁确认？</li><li>如何设计 PoC / MVP 的假设、数据、成功标准、退出条件和时间盒？</li><li>如何选择 Build / Buy / Partner，考虑差异化、数据敏感度、锁定风险和总拥有成本？</li><li>如何设计目标架构、平台复用、业务域自治和 6–18 个月路线图？</li><li>如何建立 AI Governance、风险分级、审批责任、模型/数据清单和审计？</li><li>如何推动组织、岗位、流程和激励机制改变？如何验证真实 ROI 并规模化推广？</li></ol>
+<div class="box"><h4>必须深挖的证据</h4>业务案例、价值树、基线与实际结果、投资决策材料、MVP 验收标准、Build/Buy 分析、推广计划、采用率和财务/运营 KPI。</div>
+</div>
+<div class="field"><label>Scenario observations / Whiteboard notes</label><textarea id="scenarioNotes" placeholder="记录候选人架构图、关键决策、权衡、遗漏点及追问结果"></textarea></div>
+</section>
+<section class="panel">
+<h2>Overall Interview Feedback</h2>
+<div class="feedback">
+<div class="field"><label>Key Strengths</label><textarea id="strengths"></textarea></div>
+<div class="field"><label>Key Gaps</label><textarea id="gaps"></textarea></div>
+<div class="field"><label>Technical Risks</label><textarea id="risks"></textarea></div>
+<div class="field"><label>Strategic Capability</label><textarea id="strategic"></textarea></div>
+<div class="field"><label>Role Fit</label><textarea id="rolefit"></textarea></div>
+<div class="field"><label>Follow-up Validation</label><textarea id="followup"></textarea></div>
+<div class="field"><label>Final Recommendation</label><select id="finalRec"><option value="">请选择</option><option>Strong Hire</option><option>Hire</option><option>Hire with Reservations</option><option>Further Validation</option><option>No Hire</option></select></div>
+<div class="field"><label>Interviewer Summary</label><textarea id="summary"></textarea></div>
+</div>
+<div class="note" style="margin-top:14px">公平性提醒：对同类候选人使用相同核心问题和评分标准；依据具体项目行为和结果评分。避免首见效应、晕轮效应、投射效应、类比效应、反差效应、诱导效应和模糊记录。不得基于受保护特征作判断。</div>
+</section>
+<footer>Local-first assessment · Data stays in this browser unless you export it · Competency framework is an interview aid, not an automated hiring decision.</footer>
+</main>
+<script type="application/json" id="embedded-assessment-state">{"framework":"AI-era Strategic / Lead Digital & AI Solution Architect v1.0","created_at":"2026-10-31T16:35:31.420Z","info":{"candidate":"Sample","interviewer":"于鑫蕾","date":"","position":"","client":"","context":"","round":"Technical / Architecture","duration":"","scenarioNotes":"","strengths":"","gaps":"","risks":"","strategic":"","rolefit":"","followup":"","finalRec":"","summary":""},"competency":[{"id":"business","name":"Business & Strategic Thinking","name_zh":"业务与战略思维","weight":12,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"dsa","name":"Digital Solution Architecture","name_zh":"数字化解决方案架构","weight":13,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"aiarch","name":"AI / LLM Architecture","name_zh":"AI / LLM 架构","weight":13,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"sdlc","name":"AI-native SDLC Transformation","name_zh":"AI 原生软件工程转型","weight":15,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"platform","name":"Cloud / Data / Platform Engineering","name_zh":"云、数据与平台工程","weight":9,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"llmops","name":"LLMOps / AI Engineering","name_zh":"LLMOps 与 AI 工程","weight":10,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"ea","name":"Enterprise Architecture & Governance","name_zh":"企业架构与治理","weight":9,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"security","name":"AI Security & Responsible AI","name_zh":"AI 安全与可信 AI","weight":7,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"leadership","name":"Consulting & Leadership","name_zh":"咨询能力与领导力","weight":7,"level":null,"weighted_score":null,"evidence":"","notes":""},{"id":"value","name":"Innovation & Value Realization","name_zh":"创新与价值实现","weight":5,"level":null,"weighted_score":null,"evidence":"","notes":""}],"score":{"rated_dimensions":0,"total_dimensions":10,"assessed_weight":0,"weighted_score_0_to_5":null,"normalized_percent":null,"full_assessment":false},"saved_at":"2026-10-31T16:35:31.420Z"}</script>
+<script>
+const dims=[
+{id:"business",name:"Business & Strategic Thinking",zh:"业务与战略思维",w:12,def:"将企业战略、业务模式、价值流和经营目标转化为业务能力、技术投资组合及可衡量的架构路线图。",scene:"企业数字化战略、AI 战略、业务能力地图、投资优先级。",questions:["选择一个你主导的企业转型项目：业务战略如何转化为架构蓝图和投资路线图？","你如何识别价值流瓶颈，并判断 AI 是否适合解决？","当业务高管要求全面上 AI、但没有明确用例时，你如何引导？"],probes:["业务基线、价值树和 KPI 是什么？由谁确认？","你比较过哪些投资选项和机会成本？","哪个战略假设被事实推翻？你如何调整？"],star:"讲述一次你影响业务高管改变投资或业务方向的经历。你负责什么？采取了哪些分析和影响行动？结果如何量化？",design:"为一个跨区域企业绘制 Capability Map / Value Stream，选择 3 个 AI 用例，说明优先级、价值假设、依赖和路线图。",evidence:"业务案例、Capability Map、价值流图、投资决策材料、基线/ROI、路线图及本人决策记录。",good:"先问经营目标与约束；明确基线、价值池、成本和风险；用业务能力与依赖组织路线图；敢于建议不做 AI。",gap:"泛谈数字化愿景，直接推荐技术；ROI 无基线；无法说明业务高管如何参与决策。",rubric:["无法描述业务模式、价值流或业务目标与技术的关系。","能复述业务流程，参与过需求分析，但需要他人定义价值和优先级。","独立完成业务能力/流程分析，将需求转成方案和初步价值指标。","主导跨业务域战略分析、价值树和投资路线图，处理业务冲突与依赖。","影响企业战略/投资组合决策，定义目标运营模式，以可验证经营成果推动持续转型。"]},
+{id:"dsa",name:"Digital Solution Architecture",zh:"数字化解决方案架构",w:13,def:"设计复杂企业级系统的端到端架构，平衡业务能力、应用、集成、数据、技术和非功能要求。",scene:"大型核心系统现代化、微服务、事件驱动、API、跨域集成。",questions:["讲述你设计过最复杂的端到端企业架构，画出关键组件和数据流。","如何处理跨系统一致性、耦合、可用性和遗留系统演进？","描述一次关键架构决策及被放弃的替代方案。"],probes:["容量、SLO、RTO/RPO 和故障域是什么？","如何处理版本兼容、幂等、重试、补偿和数据一致性？","如何验证架构而不是只画图？"],star:"讲述一次你主导复杂架构交付或重构的经历，重点说明个人决策、技术权衡、生产结果和复盘。",design:"设计订单到履约的跨域系统：API / Event、数据一致性、容错、可观测性、扩展、迁移和回滚。",evidence:"架构图、ADR、接口/事件契约、容量模型、SLO、故障复盘、迁移计划和生产指标。",good:"从质量属性驱动设计；讲清权衡和失效模式；用 ADR、PoC、压测和生产反馈验证。",gap:"堆砌微服务/云产品名；没有数据流、边界、故障模型或迁移策略。",rubric:["缺乏系统设计基础，无法解释核心组件关系。","了解常见架构模式，参与局部模块设计，需要指导处理复杂权衡。","能独立设计中型系统、集成和非功能方案并交付。","主导复杂跨域架构，能处理一致性、韧性、迁移和多团队依赖。","定义企业级参考架构和演进策略，影响跨业务域决策并证明长期质量与价值。"]},
+{id:"aiarch",name:"AI / LLM Architecture",zh:"AI / LLM 架构",w:13,def:"设计企业级模型服务、RAG、Agent、工具集成和知识架构，理解模型能力边界及系统性权衡。",scene:"企业知识助手、多 Agent 流程、模型网关、统一 AI Platform。",questions:["设计一个多业务域共享的 Enterprise AI Platform，解释模型、知识、Agent 和治理边界。","何时选 RAG、Fine-tuning、长上下文或传统搜索？","如何设计 Model Routing、Tool Calling、MCP 和多 Agent 协作？"],probes:["检索失败、权限过滤和知识更新如何处理？","如何避免 Agent 无限循环、工具误调用和上下文污染？","模型切换时如何验证能力、成本、延迟和回归？"],star:"讲述你把一个 LLM / Agent 系统从原型推向生产的经历，说明架构、个人贡献、故障和指标。",design:"企业多域知识助手：Model Gateway、Hybrid Retrieval、Reranker、Agent Runtime、MCP、Identity、Policy、Tracing。",evidence:"生产架构图、模型路由策略、RAG 评测、Agent Trace、MCP/API 契约、权限测试、成本和延迟报表。",good:"能解释模型机制和边界；根据任务选择架构；设计检索、权限、Agent 状态、工具安全及降级。",gap:"只会 Prompt + Vector DB Demo；把 Agent 当作多轮聊天；忽略权限、状态、成本和故障。",rubric:["仅知道 LLM 名词，不能解释基本机制和企业架构。","能调用模型 API 或搭建简单 RAG，依赖框架示例。","独立设计单一生产 AI 用例，理解检索、模型调用、工具和安全基础。","主导多系统/多模型 AI 架构，处理路由、上下文、Agent 编排、权限和非功能要求。","定义企业 AI 平台和参考架构，制定模型/Agent 组合策略并推动多业务域规模化采用。"]},
+{id:"sdlc",name:"AI-native SDLC Transformation",zh:"AI 原生软件工程转型",w:15,def:"将 AI Agents、Specification、Skills、Hooks、Evals 和 Human-in-the-loop 融入 Plan / Design / Build / Test / Deploy / Maintain 全生命周期。",scene:"研发体系转型、Agentic Engineering、研发平台和组织变革。",questions:["你真正落地过哪些 AI-native SDLC 阶段？请从 Plan 到 Maintain 端到端说明。","如何将 intent / specification 转化为可执行、可审查、可追溯的工程产物？","Skills、Hooks、Subagents、Context Engineering 各解决什么问题？如何治理？"],probes:["覆盖多少团队、仓库、开发者？试点到推广用了多久？","Agent 的权限边界、人工审批和失败回退如何设计？","Evals 数据集如何构建？Skill/Prompt/Model 变更如何回归？","效率提升如何排除需求变化、人员变化等干扰因素？"],star:"讲述你主导研发流程或组织转型的案例，量化改造前后 lead time、吞吐、质量、返工和人工审核负荷。",design:"为已有 Jira/GitHub/CI 的企业设计 6–12 个月路线图，覆盖六阶段、Skills、Hooks、Agent Orchestration、Evals、治理、组织与 KPI。",evidence:"流程前后图、intent/spec/plan 样例、Skills/Hook 仓库、Agent 工作流、Evals CI、试点范围、DORA/质量数据、复盘。",good:"按价值和风险分阶段；先打通反馈与测试；把知识编码为 Skills、确定性政策放 Hooks；Evals 随配置变化回归；按风险分层授权。",gap:"把 AI Coding 工具培训称作转型；只报代码生成比例；没有质量门禁、基线、组织设计或生产证据。",rubric:["没有 AI 辅助工程实践认知，或把 AI 等同自动补全。","使用过 Copilot/Agent 完成局部任务，但无流程和质量治理。","独立在团队/项目中落地部分 SDLC 阶段，有可复用流程和基本指标。","主导多团队端到端转型，建立 Skills/Hooks/Evals/权限门禁并证明质量效率改善。","定义企业级 Agentic Engineering Operating Model，规模化改变研发组织和生命周期，形成持续学习闭环及可审计业务成果。"]},
+{id:"platform",name:"Cloud / Data / Platform Engineering",zh:"云、数据与平台工程",w:9,def:"设计可扩展、可靠、安全、成本可控的云基础设施、数据平台和内部开发者平台。",scene:"Hybrid / Multi-cloud、Kubernetes、IaC、Data Platform、平台工程。",questions:["描述你主导的云/数据/平台架构，说明规模、可靠性和成本约束。","如何设计企业级数据平台支撑 RAG 和实时 AI 应用？","如何通过 Platform as a Product 提升开发者体验和标准化？"],probes:["容量、弹性、隔离、灾备、RTO/RPO 如何确定？","数据血缘、质量、保留、删除和访问控制如何实现？","FinOps 如何分摊和优化 GPU/Token/存储成本？"],star:"讲述一次平台建设或云迁移，说明个人负责范围、关键风险、故障及成本/可靠性结果。",design:"设计多区域 AI 平台基础设施：网络、身份、K8s、数据湖、向量检索、GPU/推理服务、IaC、监控、灾备。",evidence:"云架构图、IaC 仓库、容量/成本模型、SLO、数据治理方案、灾备演练、迁移和故障复盘。",good:"从工作负载和SLO反推平台；自动化可重复；具备数据治理、韧性和FinOps实践。",gap:"只报云服务名称；基础设施交给别人且不理解约束；无容量、灾备和成本模型。",rubric:["不了解云、数据和平台基础概念。","使用过托管服务或部署流程，缺乏独立设计能力。","能独立设计和交付单一云/数据平台并满足基本非功能要求。","主导多环境平台、数据治理、灾备、成本和开发者体验。","制定企业平台战略和标准，优化跨域平台投资、韧性、数据资产和长期成本。"]},
+{id:"llmops",name:"LLMOps / AI Engineering",zh:"LLMOps 与 AI 工程",w:10,def:"建立模型、Prompt、数据集、Agent 和工具链的持续评测、版本管理、观测、质量保障和优化机制。",scene:"AI 生产运营、模型升级、评测平台、质量和成本管理。",questions:["如何为 RAG/Agent 建立可重复的 Evaluation Framework？","如何评估模型升级、Prompt 修改或 Skill 变化是否造成回归？","生产环境如何观察质量、成本、延迟和任务成功率？"],probes:["黄金数据集从哪里来？如何防止数据泄漏和过拟合？","如何结合人工评审、规则、模型裁判和在线反馈？","如何定位检索、模型、工具、上下文哪个环节出错？"],star:"讲述一次 AI 质量或成本持续优化项目，提供指标趋势、问题定位和改进结果。",design:"设计从离线基准、CI Eval、Canary、线上监控到反馈数据集更新的闭环。",evidence:"Eval Dataset、指标定义、CI 报告、Tracing、模型/Prompt 版本记录、成本面板、事故复盘。",good:"分层评测；区分检索/生成/工具/业务指标；建立基线、置信度、人工抽检和持续回归。",gap:"只凭主观体验评估；只报告准确率；没有可复现数据集或线上观测。",rubric:["不了解 AI 质量评测和生产监控。","会手工测试 Prompt，使用少量样例，无版本和回归机制。","能为单一 AI 应用建立数据集、评测指标和基本监控。","主导多模型/Agent 的评测、Tracing、CI 回归、灰度和持续优化。","建立企业 LLMOps 标准和平台，连接质量、风险、成本与业务指标，推动跨域持续运营。"]},
+{id:"ea",name:"Enterprise Architecture & Governance",zh:"企业架构与治理",w:9,def:"建立企业级架构蓝图、原则、标准、决策机制和技术债治理，支持业务域演进与平台复用。",scene:"EA、架构委员会、目标架构、技术标准、现代化路线图。",questions:["你如何建立 As-Is / To-Be 企业架构并让业务域真正采用？","如何平衡中央架构治理与业务团队自主性？","如何管理技术债、重复建设和平台标准例外？"],probes:["架构决策权和例外审批权如何分配？","如何度量架构治理的业务效果？","标准冲突时如何解决？举例说明。"],star:"讲述一次跨组织架构治理变革，说明阻力、机制、例外和长期结果。",design:"多业务域企业建立 AI 平台与应用架构治理：原则、参考架构、决策权、风险分级、例外和技术债。",evidence:"EA 蓝图、原则、ADR、架构评审机制、技术债清单、例外台账、复用率和现代化路线图。",good:"治理嵌入交付；原则少而清晰；责任与例外透明；用风险和结果驱动而非文档审批。",gap:"只背 TOGAF；架构委员会成为审批瓶颈；无标准落地和技术债优先级。",rubric:["不了解企业架构和治理基本概念。","了解方法论，参与文档或局部评审，需要指导。","能独立制定项目级架构、原则和治理流程。","主导跨业务域架构治理、标准、例外和技术债演进。","定义企业级架构战略和治理 operating model，影响投资与组织决策并实现可衡量复用和风险改善。"]},
+{id:"security",name:"AI Security & Responsible AI",zh:"AI 安全与可信 AI",w:7,def:"识别和治理模型、数据、Agent、工具及供应链风险，设计最小权限、隔离、审计和人工监督。",scene:"金融/受监管 AI、企业 Agent、敏感数据和自动化决策。",questions:["设计企业 Agent 的身份、授权、工具访问和审计模型。","如何防范 Prompt Injection、数据外泄和越权工具调用？","如何按风险等级定义人审、自动执行和禁止场景？"],probes:["如何处理检索文档中的恶意指令？","Agent 使用用户身份还是服务身份？权限如何透传？","如何证明控制有效，而不只是写安全政策？"],star:"讲述一次安全风险或合规要求影响架构设计的经历，说明威胁、控制验证和事件结果。",design:"设计可访问企业邮件、文档和工单的 Agent：威胁模型、身份、租户隔离、工具沙箱、审批、审计。",evidence:"Threat Model、IAM 策略、红队测试、DLP/审计日志、权限测试、审批记录、事故演练。",good:"纵深防御；不信任模型输出；工具最小权限；身份透传；输入/输出和执行面均有控制。",gap:"认为模型供应商会解决全部安全；只做关键词过滤；Agent 持有宽泛长期凭证。",rubric:["不了解 AI 安全和数据隐私风险。","知道常见风险，但依赖供应商默认安全配置。","能为单一应用设计基础访问控制、脱敏和人工审核。","主导企业 Agent 安全架构、威胁建模、隔离、审计和风险分级。","制定企业 Responsible AI 治理策略，将风险控制、合规和问责嵌入平台与生命周期。"]},
+{id:"leadership",name:"Consulting & Leadership",zh:"咨询能力与领导力",w:7,def:"通过高管沟通、结构化问题解决、利益相关方管理和团队领导推动复杂技术与组织决策。",scene:"CIO/CTO 咨询、架构工作坊、跨部门转型、团队建设。",questions:["讲述一次你改变客户高管或业务负责人的技术/投资决策的经历。","如何处理业务、开发、安全和运营团队的目标冲突？","如何把复杂 AI 技术风险解释给非技术高管？"],probes:["对方最初反对什么？你如何建立共识？","如何区分事实、假设和建议？","如何培养其他架构师而不是所有决策都依赖你？"],star:"描述一次跨组织阻力最大的转型，说明你的影响策略、冲突处理和结果。",design:"主持客户高管工作坊：从模糊的“全面 AI”目标形成共同问题定义、决策选项和下一步承诺。",evidence:"高管决策材料、Workshop 产出、Stakeholder Map、团队培养记录、冲突解决和客户反馈。",good:"先倾听再框定问题；结构化表达；提出选项与权衡；建立共识并授权团队。",gap:"技术独白；以职位压人；将反对意见视为不懂技术；没有推动决策的实例。",rubric:["表达混乱，难以与不同角色协作。","能清晰沟通局部技术事项，但需要他人推动冲突解决。","独立主持项目讨论，协调多团队并交付方案。","主导客户/企业级复杂变革，影响高管决策并培养团队。","成为可信赖的战略顾问，持续影响高管议程、组织能力和跨企业生态协作。"]},
+{id:"value",name:"Innovation & Value Realization",zh:"创新与价值实现",w:5,def:"从问题发现到 PoC、MVP、生产化和规模推广，建立投资纪律并验证可持续业务价值。",scene:"AI 创新组合、PoC 工厂、Build/Buy/Partner、规模化采用。",questions:["讲述一个你推动从 PoC 到生产并规模化的 AI 创新案例。","如何设计 AI Use Case Portfolio 和 PoC 淘汰机制？","如何做 Build / Buy / Partner 和供应商锁定风险判断？"],probes:["PoC 的假设、成功标准和退出条件是什么？","上线后谁负责运营？采用率和 ROI 如何验证？","有没有主动终止过技术上成功但商业价值不足的项目？"],star:"讲述一次创新项目的商业化过程，给出投资、采用、运营和实际价值证据。",design:"设计 12 个月 AI 创新组合：价值评分、试点、生产准入、复用平台、运营责任和 ROI 追踪。",evidence:"Use Case Portfolio、Business Case、PoC 验收、上线记录、用户采用、财务/运营 KPI、终止决策。",good:"从业务问题出发；有量化基线和停止条件；重视运营、采用和持续收益。",gap:"以 Demo 数量、模型新颖度或媒体曝光作为成功；无生产责任和 ROI。",rubric:["只提出创新想法，无法描述实施和价值验证。","参与 PoC，成功标准模糊，未推动生产化。","独立推动单一用例从 MVP 到生产并跟踪基础 KPI。","主导多用例组合、Build/Buy 决策和规模化推广，验证 ROI。","建立企业创新投资和价值实现机制，持续优化组合并形成可审计的经营收益。"]}
+];
+const names=["Insufficient","Basic","Competent","Advanced","Strategic"];
+const scores={};
+function el(tag,attrs={},html=""){const svgTags=new Set(["svg","polygon","line","text","circle","polyline","path"]);const x=svgTags.has(tag)?document.createElementNS("http://www.w3.org/2000/svg",tag):document.createElement(tag);Object.entries(attrs).forEach(([k,v])=>x.setAttribute(k,v));if(html)x.innerHTML=html;return x}
+function render(){
+ const root=document.getElementById("competencies");
+ dims.forEach((d,i)=>{
+  const card=el("section",{class:"competency",id:"c-"+d.id});
+  card.innerHTML=`<div class="comphead"><div><h2>${i+1}. ${d.name} <span class="muted">/ ${d.zh}</span></h2><div class="compdesc">${d.def}</div></div><span class="weight">${d.w}%</span></div>
+  <div class="two">
+   <div class="box"><h4>典型场景</h4>${d.scene}<h4 style="margin-top:9px">核心面试问题</h4><ul>${d.questions.map(q=>`<li>${q}</li>`).join("")}</ul></div>
+   <div class="box"><h4>深度追问</h4><ul>${d.probes.map(q=>`<li>${q}</li>`).join("")}</ul><h4 style="margin-top:9px">STAR 行为问题</h4>${d.star}</div>
+   <div class="box"><h4>架构设计 / 场景题</h4>${d.design}</div>
+   <div class="box"><h4>项目证据清单</h4>${d.evidence}<h4 style="margin-top:8px">优秀回答特征</h4>${d.good}<h4 style="margin-top:8px">伪经验 / 风险信号</h4>${d.gap}</div>
+  </div><h3 style="margin-top:14px">五级行为评价标准（选择最符合已验证证据的等级）</h3>
+  <div class="rubric">${d.rubric.map((r,j)=>`<button class="level" type="button" data-dim="${d.id}" data-level="${j+1}"><strong>Level ${j+1} · ${names[j]}</strong><small>${r}</small></button>`).join("")}</div>
+  <div class="ratingline"><label><b>当前评分：</b></label><select id="rate-${d.id}" onchange="setScore('${d.id}',this.value)"><option value="">未评分</option>${[1,2,3,4,5].map(n=>`<option value="${n}">Level ${n} — ${names[n-1]}</option>`).join("")}</select><span class="hint">权重 ${d.w}% · 单项得分 = 等级 / 5</span></div>
+  <div class="evidence"><div class="field"><label>STAR Evidence / 个人贡献 / 结果数据</label><textarea id="ev-${d.id}" placeholder="S 情境；T 任务；A 候选人本人采取的行动；R 可验证结果。记录规模、时间、指标和证据出处。"></textarea></div><div class="field"><label>Interviewer Notes / Risks / Follow-up</label><textarea id="note-${d.id}" placeholder="优势、差距、风险、待核实事项；区分候选人陈述与面试官推断。"></textarea></div></div>`;
+  root.appendChild(card);
+ });
+ document.querySelectorAll(".level").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.dim;setScore(id,b.dataset.level)}));
+}
+function setScore(id,v){scores[id]=v?Number(v):null;document.getElementById("rate-"+id).value=v;document.querySelectorAll(`[data-dim="${id}"]`).forEach(b=>b.classList.toggle("selected",Number(b.dataset.level)===Number(v)&&!!v));update();}
+function update(){
+ const rated=dims.filter(d=>scores[d.id]);const totalW=rated.reduce((a,d)=>a+d.w,0);
+ const raw=rated.reduce((a,d)=>a+d.w*scores[d.id]/5,0);const score=totalW?raw/totalW*5:null;
+ document.getElementById("rated").textContent=`${rated.length} / 10`;document.getElementById("score").textContent=score?score.toFixed(2):"—";document.getElementById("percent").textContent=score?(score/5*100).toFixed(1)+"%":"—";document.getElementById("progress").style.width=(rated.length/10*100)+"%";
+ let rec="待评估";if(rated.length===10){if(score>=4.3&& ["business","dsa","aiarch","sdlc","ea","leadership"].every(id=>scores[id]>=4))rec="Strong Hire 参考";else if(score>=3.8)rec="Hire 参考";else if(score>=3.2)rec="进一步验证";else rec="不建议录用";}else if(rated.length)rec="部分评估";
+ document.getElementById("recommend").textContent=rec;drawRadar();
+}
+function drawRadar(){
+ const svg=document.getElementById("radar");svg.innerHTML="";const cx=260,cy=218,R=155,N=dims.length;
+ const pt=(i,r)=>[cx+Math.cos(-Math.PI/2+2*Math.PI*i/N)*r,cy+Math.sin(-Math.PI/2+2*Math.PI*i/N)*r];
+ for(let k=1;k<=5;k++){let points=dims.map((d,i)=>pt(i,R*k/5).join(",")).join(" ");svg.appendChild(el("polygon",{points,fill:"none",stroke:"#d7dee8","stroke-width":"1"}));}
+ dims.forEach((d,i)=>{let [x,y]=pt(i,R);svg.appendChild(el("line",{x1:cx,y1:cy,x2:x,y2:y,stroke:"#d7dee8"}));let [tx,ty]=pt(i,R+31);let t=el("text",{x:tx,y:ty,"font-size":"10","text-anchor":"middle",fill:"#475467"});t.textContent=(i+1)+"."+d.zh;svg.appendChild(t);});
+ let pts=[];dims.forEach((d,i)=>{if(scores[d.id])pts.push([i,pt(i,R*scores[d.id]/5)]);});
+ if(pts.length===dims.length){let poly=pts.map(x=>x[1].join(",")).join(" ");svg.appendChild(el("polygon",{points:poly,fill:"#3b82f6","fill-opacity":".18",stroke:"#2457a7","stroke-width":"2"}));}else{pts.forEach(([i,p])=>{const next=pts.find(x=>x[0]===(i+1)%dims.length);if(next)svg.appendChild(el("line",{x1:p[0],y1:p[1],x2:next[1][0],y2:next[1][1],stroke:"#2457a7","stroke-width":"2"}));});}
+ pts.forEach(([i,[x,y]])=>svg.appendChild(el("circle",{cx:x,cy:y,r:5,fill:"#2457a7",stroke:"white","stroke-width":"2"})));
+ dims.forEach((d,i)=>{if(!scores[d.id]){let [x,y]=pt(i,R*.10);svg.appendChild(el("circle",{cx:x,cy:y,r:4,fill:"white",stroke:"#98a2b3","stroke-width":"1.5"}));}});
+ document.getElementById("legendRows").innerHTML=dims.map((d,i)=>`<div class="legenditem"><span>${i+1}. ${d.zh}</span><b>${scores[d.id]?"L"+scores[d.id]:"未评分"}</b></div>`).join("");
+}
+function collect(){
+ const ids=["candidate","interviewer","date","position","client","context","round","duration","scenarioNotes","strengths","gaps","risks","strategic","rolefit","followup","finalRec","summary"];
+ const info={};ids.forEach(id=>info[id]=document.getElementById(id).value);
+ const competency=dims.map(d=>({id:d.id,name:d.name,name_zh:d.zh,weight:d.w,level:scores[d.id]||null,weighted_score:scores[d.id]?d.w*scores[d.id]/5:null,evidence:document.getElementById("ev-"+d.id).value,notes:document.getElementById("note-"+d.id).value}));
+ const rated=competency.filter(x=>x.level),w=rated.reduce((a,x)=>a+x.weight,0),sum=rated.reduce((a,x)=>a+x.weight*x.level/5,0);
+ return {framework:"AI-era Strategic / Lead Digital & AI Solution Architect v1.0",created_at:new Date().toISOString(),info,competency,score:{rated_dimensions:rated.length,total_dimensions:10,assessed_weight:w,weighted_score_0_to_5:w?sum/w*5:null,normalized_percent:w?sum/w*100:null,full_assessment:rated.length===10}};
+}
+function download(name,content,type){const a=document.createElement("a"),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function saveUpdatedHTML(){
+ const state=collect();state.saved_at=new Date().toISOString();
+ const copy=document.documentElement.cloneNode(true);
+ // Competency cards are generated at runtime; clear them in the saved source
+ // so they are rendered exactly once when the shared HTML is reopened.
+ const competencyRoot=copy.querySelector("#competencies");if(competencyRoot)competencyRoot.innerHTML="";
+ const stateNode=copy.querySelector("#embedded-assessment-state");
+ stateNode.textContent=JSON.stringify(state).replace(/</g,"\\u003c");
+ const candidate=(state.info.candidate||"candidate").trim().replace(/[^\w\-\u4e00-\u9fff]+/g,"_").slice(0,50)||"candidate";
+ const date=state.info.date||new Date().toISOString().slice(0,10);
+ download(`Strategic_AI_Architect_Assessment_${candidate}_${date}.html`,"<!doctype html>\n"+copy.outerHTML,"text/html;charset=utf-8");
+}
+function restoreEmbeddedState(){
+ const node=document.getElementById("embedded-assessment-state");if(!node)return;
+ let state;try{state=JSON.parse(node.textContent||"{}");}catch(e){console.warn("Saved assessment data could not be read",e);return;}
+ if(!state||!state.info)return;
+ Object.entries(state.info).forEach(([id,value])=>{const field=document.getElementById(id);if(field&&value!==undefined&&value!==null)field.value=value;});
+ (state.competency||[]).forEach(item=>{
+  if(!item||!item.id)return;
+  const evidence=document.getElementById("ev-"+item.id),notes=document.getElementById("note-"+item.id);
+  if(evidence)evidence.value=item.evidence||"";if(notes)notes.value=item.notes||"";
+  if(item.level)scores[item.id]=Number(item.level);
+ });
+ dims.forEach(d=>{const value=scores[d.id]||"";const select=document.getElementById("rate-"+d.id);if(select)select.value=value;document.querySelectorAll(`[data-dim="${d.id}"]`).forEach(b=>b.classList.toggle("selected",Number(b.dataset.level)===Number(value)&&!!value));});
+ update();
+}
+function exportJSON(){download("architect-interview-assessment.json",JSON.stringify(collect(),null,2),"application/json;charset=utf-8");}
+function exportTXT(){const x=collect(),i=x.info;let t=`STRATEGIC / LEAD DIGITAL & AI SOLUTION ARCHITECT — INTERVIEW FEEDBACK\n\nCandidate: ${i.candidate}\nInterviewer: ${i.interviewer}\nDate: ${i.date}\nPosition: ${i.position}\nClient / Industry: ${i.client}\nProject Context: ${i.context}\nRound: ${i.round}\n\nSCORE: ${x.score.weighted_score_0_to_5?.toFixed(2)??"N/A"}/5 (${x.score.normalized_percent?.toFixed(1)??"N/A"}%)\nRated: ${x.score.rated_dimensions}/10 | Assessed weight: ${x.score.assessed_weight}%\n\nCOMPETENCY SCORES\n`;x.competency.forEach(c=>t+=`${c.name} (${c.weight}%): ${c.level?`Level ${c.level}`:"Not rated"}\nEvidence: ${c.evidence}\nNotes: ${c.notes}\n\n`);t+=`\nSCENARIO NOTES\n${i.scenarioNotes}\n\nKEY STRENGTHS\n${i.strengths}\n\nKEY GAPS\n${i.gaps}\n\nTECHNICAL RISKS\n${i.risks}\n\nSTRATEGIC CAPABILITY\n${i.strategic}\n\nROLE FIT\n${i.rolefit}\n\nFOLLOW-UP VALIDATION\n${i.followup}\n\nFINAL RECOMMENDATION\n${i.finalRec}\n\nINTERVIEWER SUMMARY\n${i.summary}\n\nNote: Score is decision support only, not an automated hiring decision.`;download("architect-interview-feedback.txt",t,"text/plain;charset=utf-8");}
+function resetAll(){if(!confirm("确定清空所有候选人信息、评分和记录？此操作不可撤销。"))return;document.querySelectorAll("input:not([readonly]),textarea").forEach(x=>x.value="");document.querySelectorAll("select").forEach(x=>x.selectedIndex=0);dims.forEach(d=>{scores[d.id]=null;document.querySelectorAll(`[data-dim="${d.id}"]`).forEach(b=>b.classList.remove("selected"));});document.getElementById("embedded-assessment-state").textContent="{}";update();}
+render();restoreEmbeddedState();update();
+</script>
+</body></html>

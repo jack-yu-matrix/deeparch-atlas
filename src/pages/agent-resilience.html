@@ -1,0 +1,640 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Streaming Resilience Architecture</title>
+<style>
+:root {
+  --blue:#12ABDB;
+  --blue2:#0070AD;
+  --navy:#071827;
+  --dark:#101820;
+  --ink:#17232E;
+  --muted:#687783;
+  --light:#F3F6F8;
+  --white:#FFFFFF;
+  --green:#20B486;
+  --orange:#F5A623;
+  --red:#E65B62;
+  --line:#DCE4E9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,"Microsoft YaHei",sans-serif;background:#050F19;color:var(--ink)}
+.deck{width:100vw;height:100vh;overflow:hidden;position:relative}
+.slide{
+ display:none;position:absolute;inset:0;padding:6.2vh 7vw 7vh;
+ background:var(--white);overflow:auto;
+}
+.slide.active{display:flex;flex-direction:column;animation:enter .35s ease}
+.slide.dark{background:var(--navy);color:white}
+@keyframes enter{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--blue2);font-weight:700;margin-bottom:16px}
+.dark .kicker{color:var(--blue)}
+h1{font-size:clamp(42px,5.5vw,76px);line-height:1.06;letter-spacing:-2px;margin:0 0 24px;font-weight:750}
+h2{font-size:clamp(30px,3.2vw,46px);line-height:1.12;margin:0 0 24px;letter-spacing:-1px}
+h3{font-size:19px;margin:0 0 10px}
+p{font-size:17px;line-height:1.65;color:var(--muted);margin:7px 0}
+.dark p{color:#B8C8D4}
+.subtitle{font-size:22px;line-height:1.5;max-width:850px}
+.accent{color:var(--blue)}
+.rule{height:4px;width:70px;background:var(--blue);margin:0 0 24px}
+.footer{position:absolute;bottom:22px;left:7vw;right:7vw;display:flex;justify-content:space-between;font-size:11px;color:#84929C;letter-spacing:1px}
+.dark .footer{color:#72899A}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--light);border:1px solid #E6ECEF;border-radius:13px;padding:20px}
+.dark .card{background:#10283A;border-color:#24445A}
+.card p{font-size:14px}
+.card .num{font-size:32px;font-weight:800;color:var(--blue);margin-bottom:12px}
+.pill{display:inline-block;padding:6px 10px;border-radius:30px;background:#E3F6FC;color:#0070AD;font-size:12px;font-weight:700;margin:3px}
+.dark .pill{background:#123C55;color:#7DDCFA}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:25px 0}
+.node{background:#EAF5FA;border:1px solid #B9DDEB;padding:16px 18px;border-radius:10px;text-align:center;min-width:130px;font-weight:700;font-size:14px}
+.node.darknode{background:#102D43;color:white;border-color:#28516B}
+.arrow{color:var(--blue2);font-size:25px;font-weight:bold}
+.stack{display:flex;flex-direction:column;gap:8px;max-width:780px;margin:12px auto;width:100%}
+.layer{padding:13px 18px;border-radius:8px;text-align:center;font-weight:700;border:1px solid #C9DCE6;background:#EEF6FA}
+.layer.primary{background:#DDF5FC;border-color:#79CEE7}
+.layer.darklayer{background:#15384F;border-color:#2C6685;color:#fff}
+.small{font-size:13px;color:var(--muted)}
+.dark .small{color:#9FB3C1}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+th{text-align:left;background:#EAF4F8;padding:12px;color:#075D83}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+.dark th{background:#16374D;color:#A6E8FB}
+.dark td{border-color:#244154}
+pre{background:#0D1B27;color:#D4EDF7;padding:17px;border-radius:10px;font-size:13px;line-height:1.55;overflow:auto;white-space:pre-wrap}
+.code-label{font-size:11px;color:var(--blue);font-weight:700;letter-spacing:1.5px;margin:12px 0 5px}
+.timeline{border-left:2px solid var(--blue);margin:15px 0 0 12px;padding-left:22px}
+.step{position:relative;margin:0 0 18px}
+.step:before{content:"";position:absolute;left:-29px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--blue)}
+.step b{display:block;margin-bottom:4px}
+.metric{font-size:35px;font-weight:800;color:var(--blue)}
+.bad{color:var(--red)}.good{color:var(--green)}.warn{color:var(--orange)}
+.diagram{background:#F5F8FA;border:1px solid #E0E9EE;border-radius:12px;padding:18px}
+.dark .diagram{background:#0B2233;border-color:#23465B}
+.state{padding:14px;border-radius:9px;text-align:center;font-weight:800}
+.open{background:#FDE9E9;color:#A83239}
+.closed{background:#DFF5EC;color:#087B55}
+.half{background:#FFF2D9;color:#946000}
+.nav{position:fixed;right:25px;bottom:17px;z-index:10;display:flex;align-items:center;gap:10px;color:#9EAFBA;font-size:12px}
+.nav button{border:1px solid #39576B;background:#10283A;color:white;border-radius:8px;padding:8px 13px;cursor:pointer}
+.nav button:hover{background:var(--blue2)}
+.progress{position:fixed;left:0;bottom:0;height:4px;background:var(--blue);z-index:20;width:0;transition:width .25s}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:15px}
+.toc button{padding:12px;text-align:left;background:#F0F5F7;border:0;border-radius:8px;cursor:pointer;color:#1B3546;font-size:13px}
+.toc button:hover{background:#DDF5FC}
+@media(max-width:760px){
+ .slide{padding:5vh 6vw 9vh}
+ .cols,.cols3{grid-template-columns:1fr}
+ .toc{grid-template-columns:repeat(2,1fr)}
+ .flow{gap:5px}.node{min-width:100px;padding:10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 01 -->
+<section class="slide dark active">
+ <div class="kicker">ENTERPRISE AI ARCHITECTURE · 2026</div>
+ <div style="margin-top:7vh">
+  <div class="rule"></div>
+  <h1>LLM Streaming<br><span class="accent">Resilience</span><br>Architecture</h1>
+  <p class="subtitle">基于 Spring AI + SSE + Resilience4j 的大模型流式调用治理方案</p>
+  <p style="margin-top:35px;color:#8FA8B8">熔断 · 限流 · 降级 · 超时 · TTFT · 可观测性</p>
+ </div>
+ <div style="margin-top:auto;display:flex;gap:12px;align-items:center">
+  <span class="pill">Spring Boot</span><span class="pill">Spring AI</span><span class="pill">Reactor</span><span class="pill">Resilience4j</span>
+ </div>
+ <div class="footer"><span>AI ENGINEERING / SOLUTION DESIGN</span><span>01 / 20</span></div>
+</section>
+
+<!-- 02 -->
+<section class="slide">
+ <div class="kicker">01 / CONTEXT</div>
+ <h2>为什么 LLM 调用需要一套独立的治理体系？</h2>
+ <p class="subtitle">传统 HTTP 服务通常关注请求成功率和响应时间；LLM 流式服务还必须管理生成过程中的时间、连接和资源。</p>
+ <div class="cols3" style="margin-top:30px">
+  <div class="card"><div class="num">01</div><h3>响应时间不可预测</h3><p>模型排队、Prompt 长度、推理负载都会影响首 Token 和完整生成时间。</p></div>
+  <div class="card"><div class="num">02</div><h3>连接长期占用</h3><p>SSE 连接可能持续数秒甚至数分钟，消耗 Web 容器、网络和模型并发资源。</p></div>
+  <div class="card"><div class="num">03</div><h3>故障影响面更大</h3><p>Provider 故障或模型拥塞可能导致大量请求堆积，并产生级联超时。</p></div>
+ </div>
+ <div class="rule" style="margin-top:30px"></div>
+ <h3>治理目标</h3>
+ <p>让系统在模型慢、模型故障、流量突增时，依然能够快速响应、隔离故障并优雅降级。</p>
+ <div class="footer"><span>LLM RESILIENCE</span><span>02 / 20</span></div>
+</section>
+
+<!-- 03 -->
+<section class="slide">
+ <div class="kicker">02 / PROBLEM SPACE</div>
+ <h2>流式 LLM 服务的六个核心问题</h2>
+ <div class="cols3">
+  <div class="card"><h3>TTFT</h3><div class="metric">首 Token</div><p>用户发起请求到收到第一个有效内容块的时间。</p></div>
+  <div class="card"><h3>生成耗时</h3><div class="metric">Duration</div><p>从订阅开始到流结束的总耗时。</p></div>
+  <div class="card"><h3>Idle Gap</h3><div class="metric">间隔</div><p>相邻内容块之间长时间没有数据的情况。</p></div>
+  <div class="card"><h3>Concurrency</h3><div class="metric">并发</div><p>同时运行的模型生成任务数量。</p></div>
+  <div class="card"><h3>Provider</h3><div class="metric">故障</div><p>模型 API 超时、限流、连接异常和服务不可用。</p></div>
+  <div class="card"><h3>Cancellation</h3><div class="metric">取消</div><p>客户端断开后，必须及时取消上游模型请求。</p></div>
+ </div>
+ <div class="footer"><span>PROBLEM SPACE</span><span>03 / 20</span></div>
+</section>
+
+<!-- 04 -->
+<section class="slide dark">
+ <div class="kicker">03 / DESIGN PRINCIPLES</div>
+ <h2>总体设计原则</h2>
+ <div class="cols">
+  <div>
+   <h3 class="accent">保护用户体验</h3>
+   <p>优先保证首 Token 响应速度，避免用户长时间等待而没有反馈。</p>
+   <h3 class="accent" style="margin-top:25px">保护系统资源</h3>
+   <p>控制并发和请求速率，避免慢请求持续占用连接和线程。</p>
+  </div>
+  <div>
+   <h3 class="accent">隔离模型故障</h3>
+   <p>通过熔断和主备模型降低单一 Provider 故障的影响范围。</p>
+   <h3 class="accent" style="margin-top:25px">尊重流式语义</h3>
+   <p>已输出内容后不切换模型，避免拼接两次生成结果造成语义错乱。</p>
+  </div>
+ </div>
+ <div class="rule" style="margin-top:25px"></div>
+ <p class="subtitle">核心思想：在请求进入模型之前做流量控制，在模型生成过程中做时间治理，在故障发生时做隔离与降级。</p>
+ <div class="footer"><span>DESIGN PRINCIPLES</span><span>04 / 20</span></div>
+</section>
+
+<!-- 05 -->
+<section class="slide">
+ <div class="kicker">04 / REFERENCE ARCHITECTURE</div>
+ <h2>整体架构</h2>
+ <div class="stack">
+  <div class="layer">业务应用 / Web / Mobile Client</div>
+  <div class="layer primary">SSE Controller · HTTP Streaming Endpoint</div>
+  <div class="layer">LlmStreamingService · 请求编排与模型路由</div>
+  <div class="layer primary">治理层：RateLimiter · Bulkhead · CircuitBreaker</div>
+  <div class="layer">时间控制：TTFT Timeout · Idle Timeout · Generation Deadline</div>
+  <div class="layer primary">Spring AI ChatClient · Reactor Flux</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+   <div class="layer">Primary Model Provider</div><div class="layer">Fallback Model Provider</div>
+  </div>
+  <div class="layer">Metrics · Logs · Tracing · Alerting</div>
+ </div>
+ <p class="small" style="text-align:center">治理能力位于业务调用和模型 Provider 之间，避免业务代码直接耦合底层模型服务。</p>
+ <div class="footer"><span>REFERENCE ARCHITECTURE</span><span>05 / 20</span></div>
+</section>
+
+<!-- 06 -->
+<section class="slide">
+ <div class="kicker">05 / REQUEST LIFECYCLE</div>
+ <h2>一次 SSE 请求的完整链路</h2>
+ <div class="flow">
+  <div class="node">Browser</div><span class="arrow">→</span>
+  <div class="node">SSE Controller</div><span class="arrow">→</span>
+  <div class="node">Service</div><span class="arrow">→</span>
+  <div class="node">Governance</div>
+ </div>
+ <div class="flow">
+  <div class="node">ChatClient.stream()</div><span class="arrow">→</span>
+  <div class="node">Provider API</div><span class="arrow">→</span>
+  <div class="node">Flux chunks</div><span class="arrow">→</span>
+  <div class="node">SSE events</div>
+ </div>
+ <div class="cols" style="margin-top:15px">
+  <div class="card"><h3>请求阶段</h3><p>参数校验、用户配额、RateLimiter、Bulkhead、模型选择、订阅上游 Flux。</p></div>
+  <div class="card"><h3>流式阶段</h3><p>记录首内容块时间、检测空闲间隔、检查总 Deadline、持续发送 SSE 数据。</p></div>
+  <div class="card"><h3>结束阶段</h3><p>完成、异常或取消；记录指标、释放并发许可、清理上游订阅。</p></div>
+  <div class="card"><h3>故障阶段</h3><p>在允许的边界内尝试备用模型；不能安全切换时向客户端发送 error 事件。</p></div>
+ </div>
+ <div class="footer"><span>REQUEST LIFECYCLE</span><span>06 / 20</span></div>
+</section>
+
+<!-- 07 -->
+<section class="slide dark">
+ <div class="kicker">06 / SSE & REACTOR</div>
+ <h2>SSE 流式机制：Flux 是核心载体</h2>
+ <div class="cols">
+  <div>
+   <h3 class="accent">SSE 是传输协议</h3>
+   <p>Server-Sent Events 基于 HTTP 长连接，由服务端持续向客户端推送事件。</p>
+   <h3 class="accent" style="margin-top:25px">Flux 是数据流抽象</h3>
+   <p>Spring WebFlux 使用 Reactor Flux 表示 0 到 N 个异步数据项，可以在订阅、取消、错误和完成时执行治理逻辑。</p>
+  </div>
+  <div>
+   <pre>data: 你好
+
+data: ，欢迎使用
+
+data: 大模型服务
+
+event: done
+data: [DONE]</pre>
+   <p class="small">示意：每个 SSE event 都是独立消息。实际接口可使用 ServerSentEvent 对象表达 event、id、retry 和 data。</p>
+  </div>
+ </div>
+ <div class="rule" style="margin-top:22px"></div>
+ <p>关键点：SSE 连接建立不等于模型已经返回首 Token。HTTP 200、响应头和心跳事件都不能作为 TTFT 成功的判据。</p>
+ <div class="footer"><span>SSE & REACTOR</span><span>07 / 20</span></div>
+</section>
+
+<!-- 08 -->
+<section class="slide">
+ <div class="kicker">07 / TTFT DEFINITION</div>
+ <h2>TTFT：首 Token 时间到底测量什么？</h2>
+ <p class="subtitle">TTFT（Time To First Token）衡量模型从收到请求到产生第一个有效内容的等待时间，是流式体验最重要的指标之一。</p>
+ <div class="diagram" style="margin-top:20px">
+  <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700">
+   <span>请求订阅开始</span><span>首个有效内容块</span><span>流结束</span>
+  </div>
+  <div style="height:9px;background:#DDE7EC;border-radius:20px;margin:15px 0;position:relative">
+   <div style="width:32%;height:9px;background:var(--blue);border-radius:20px"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:32% 68%">
+   <div style="color:#0070AD;font-weight:700">TTFT</div>
+   <div style="color:#687783">后续生成时间</div>
+  </div>
+ </div>
+ <div class="cols" style="margin-top:22px">
+  <div class="card"><h3>计时起点</h3><p>一次模型调用真正开始订阅的时刻，而不是 Controller 创建对象的时刻。</p></div>
+  <div class="card"><h3>计时终点</h3><p>收到第一个有效文本内容块的时刻。空字符串、元数据和结束标记不计入。</p></div>
+ </div>
+ <p class="small">实现注意：Spring AI 的 content() 通常返回文本 chunk，不保证每个 chunk 严格等于模型 tokenizer 的一个 Token。因此应用层测量更准确的名称是 First Content Chunk Latency，可作为 TTFT 近似指标。</p>
+ <div class="footer"><span>TTFT DEFINITION</span><span>08 / 20</span></div>
+</section>
+
+<!-- 09 -->
+<section class="slide">
+ <div class="kicker">08 / TTFT CIRCUIT BREAKER</div>
+ <h2>TTFT 熔断：不仅是一个超时操作</h2>
+ <div class="cols">
+  <div>
+   <h3>TTFT Timeout</h3>
+   <p>单次请求的首内容等待时间超过阈值，就取消该次上游调用并触发超时处理。</p>
+   <div class="pill">单请求保护</div>
+  </div>
+  <div>
+   <h3>TTFT Circuit Breaker</h3>
+   <p>统计一段时间内的首内容慢调用比例或失败率。当模型持续变慢时，阻止新请求继续进入故障 Provider。</p>
+   <div class="pill">系统级保护</div>
+  </div>
+ </div>
+ <div class="rule" style="margin-top:25px"></div>
+ <h3>推荐判定模型</h3>
+ <table>
+  <tr><th>指标</th><th>示例阈值</th><th>含义</th></tr>
+  <tr><td>TTFT 慢调用阈值</td><td>5 秒</td><td>超过该时间视为慢调用</td></tr>
+  <tr><td>慢调用率阈值</td><td>50%</td><td>滑动窗口内慢调用比例达到阈值</td></tr>
+  <tr><td>最小样本数</td><td>20 次</td><td>避免样本太少导致误判</td></tr>
+  <tr><td>OPEN 等待时间</td><td>30 秒</td><td>暂时拒绝新请求</td></tr>
+ </table>
+ <p class="small">以上是示例参数，实际阈值应根据模型、地域、Prompt 长度、业务 SLA 和压测结果确定。</p>
+ <div class="footer"><span>TTFT CIRCUIT BREAKER</span><span>09 / 20</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide dark">
+ <div class="kicker">09 / CIRCUIT BREAKER STATE MACHINE</div>
+ <h2>熔断器的三种状态</h2>
+ <div class="cols3" style="margin-top:20px">
+  <div class="card">
+   <div class="state closed">CLOSED</div>
+   <h3 style="margin-top:18px">正常放行</h3>
+   <p>持续收集请求结果、慢调用比例和失败率。</p>
+  </div>
+  <div class="card">
+   <div class="state open">OPEN</div>
+   <h3 style="margin-top:18px">快速拒绝</h3>
+   <p>达到熔断条件后拒绝调用，避免请求继续压向故障模型。</p>
+  </div>
+  <div class="card">
+   <div class="state half">HALF_OPEN</div>
+   <h3 style="margin-top:18px">探测恢复</h3>
+   <p>允许少量试探请求，成功后关闭熔断，失败则重新打开。</p>
+  </div>
+ </div>
+ <div class="flow" style="margin-top:30px">
+  <div class="node darknode">CLOSED</div><span class="arrow">→</span>
+  <div class="node darknode">OPEN</div><span class="arrow">→</span>
+  <div class="node darknode">HALF_OPEN</div><span class="arrow">→</span>
+  <div class="node darknode">CLOSED</div>
+ </div>
+ <p>注意：熔断器应该围绕“首内容块阶段”记录 TTFT 慢调用，而不是将整个 Flux 生命周期当成 TTFT。完整生成耗时可以由独立指标或另一个治理策略负责。</p>
+ <div class="footer"><span>STATE MACHINE</span><span>10 / 20</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+ <div class="kicker">10 / TRAFFIC CONTROL</div>
+ <h2>限流与并发隔离：保护模型，也保护应用</h2>
+ <div class="cols">
+  <div class="card">
+   <h3>RateLimiter · 请求速率</h3>
+   <div class="metric">RPS</div>
+   <p>限制单位时间内允许进入模型的请求数量，控制 Provider 的调用速率与成本。</p>
+   <p><b>适合：</b>配额、突发流量、供应商 RPM 限制。</p>
+  </div>
+  <div class="card">
+   <h3>Bulkhead · 并发隔离</h3>
+   <div class="metric">N</div>
+   <p>限制同时运行的模型流式任务数量，防止长连接无限占用系统资源。</p>
+   <p><b>适合：</b>慢请求、连接池保护、模型并发上限。</p>
+  </div>
+ </div>
+ <h3 style="margin-top:25px">推荐执行顺序</h3>
+ <div class="flow">
+  <div class="node">用户配额</div><span class="arrow">→</span>
+  <div class="node">RateLimiter</div><span class="arrow">→</span>
+  <div class="node">CircuitBreaker</div><span class="arrow">→</span>
+  <div class="node">Bulkhead</div><span class="arrow">→</span>
+  <div class="node">模型调用</div>
+ </div>
+ <p class="small">具体装饰器嵌套顺序需要结合实现方式验证。对于 Reactor Flux，应使用适合响应式流的隔离方式，确保取消时释放许可。</p>
+ <div class="footer"><span>TRAFFIC CONTROL</span><span>11 / 20</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+ <div class="kicker">11 / FALLBACK STRATEGY</div>
+ <h2>主备模型降级：切换必须有边界</h2>
+ <div class="diagram">
+  <div class="flow">
+   <div class="node">Primary Model</div><span class="arrow">→</span>
+   <div class="node">等待首内容块</div><span class="arrow">→</span>
+   <div class="node">判断结果</div>
+  </div>
+  <div class="cols">
+   <div class="card">
+    <h3 class="good">首 Token 前失败</h3>
+    <p>此时尚未向用户输出模型内容，可以取消主模型并尝试备用模型。</p>
+    <div class="pill">允许 Fallback</div>
+   </div>
+   <div class="card">
+    <h3 class="bad">首 Token 后失败</h3>
+    <p>用户已经收到部分文本。切换模型会产生两次生成内容拼接，可能导致语义重复或断裂。</p>
+    <div class="pill">禁止自动拼接</div>
+   </div>
+  </div>
+  <div class="flow">
+   <div class="node">Fallback Model</div><span class="arrow">→</span>
+   <div class="node">继续输出 SSE</div>
+  </div>
+ </div>
+ <p>降级策略必须区分“请求还没有产生可见内容”和“已经进入部分输出阶段”。这是流式系统与普通请求响应系统的重要差异。</p>
+ <div class="footer"><span>FALLBACK STRATEGY</span><span>12 / 20</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide dark">
+ <div class="kicker">12 / TIMEOUT STRATEGY</div>
+ <h2>三层超时：覆盖完整生成生命周期</h2>
+ <div class="cols3">
+  <div class="card">
+   <div class="num">01</div><h3>TTFT Timeout</h3>
+   <p>限制等待首个有效内容块的时间。</p>
+   <p class="accent">例如：5 秒</p>
+  </div>
+  <div class="card">
+   <div class="num">02</div><h3>Idle Timeout</h3>
+   <p>限制相邻两个内容块之间的最大空闲时间。</p>
+   <p class="accent">例如：15 秒</p>
+  </div>
+  <div class="card">
+   <div class="num">03</div><h3>Generation Deadline</h3>
+   <p>限制整个模型生成任务的最大持续时间。</p>
+   <p class="accent">例如：120 秒</p>
+  </div>
+ </div>
+ <div class="rule" style="margin-top:30px"></div>
+ <h3>为什么不能只设置一个 Timeout？</h3>
+ <p>首 Token 慢、生成中途卡住、持续输出但整体过长，是三种不同的故障表现。它们需要独立阈值、独立指标和不同处理方式。</p>
+ <pre>请求开始 ── TTFT ── 首内容块 ── Idle Gap 检测 ── 内容块 ... ── Deadline
+     │                 │              │                   │
+     └─────────────────┴──────────────┴───────────────────┘
+                         全程受总时限约束</pre>
+ <div class="footer"><span>TIMEOUT STRATEGY</span><span>13 / 20</span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+ <div class="kicker">13 / FAILURE HANDLING</div>
+ <h2>异常处理与 SSE 生命周期</h2>
+ <table>
+  <tr><th>场景</th><th>系统动作</th><th>客户端表现</th></tr>
+  <tr><td>主模型首内容超时</td><td>取消主模型，尝试备用模型</td><td>继续等待内容</td></tr>
+  <tr><td>备用模型也失败</td><td>终止流，记录错误</td><td>收到 error 事件</td></tr>
+  <tr><td>首内容后 Provider 异常</td><td>不再切换模型，终止当前流</td><td>收到 error 事件</td></tr>
+  <tr><td>Idle Timeout</td><td>取消上游订阅</td><td>收到超时错误</td></tr>
+  <tr><td>客户端断开</td><td>取消上游订阅并释放许可</td><td>连接结束</td></tr>
+  <tr><td>Generation Deadline</td><td>取消流并记录超时</td><td>收到错误或结束事件</td></tr>
+ </table>
+ <div class="rule" style="margin-top:20px"></div>
+ <p><b>重要：</b>HTTP 响应头一旦发送，不能再把已经返回的 HTTP 200 改成 500。因此流式阶段的业务异常应通过 SSE error 事件表达，而不是试图修改 HTTP Status。</p>
+ <div class="footer"><span>FAILURE HANDLING</span><span>14 / 20</span></div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+ <div class="kicker">14 / CODE DESIGN</div>
+ <h2>核心代码模块如何分工？</h2>
+ <table>
+  <tr><th>模块</th><th>职责</th><th>关键实现</th></tr>
+  <tr><td><b>LlmStreamController</b></td><td>对外提供 SSE API</td><td>Flux / ServerSentEvent</td></tr>
+  <tr><td><b>LlmStreamingService</b></td><td>调用编排、主备路由</td><td>ChatClient.stream()</td></tr>
+  <tr><td><b>FluxDeadline</b></td><td>流式超时控制</td><td>TTFT / Idle / Deadline</td></tr>
+  <tr><td><b>ModelConfiguration</b></td><td>模型客户端配置</td><td>Primary / Fallback</td></tr>
+  <tr><td><b>ResilienceConfiguration</b></td><td>治理组件配置</td><td>CircuitBreaker / Bulkhead</td></tr>
+  <tr><td><b>MetricsCollector</b></td><td>指标采集与统计</td><td>Micrometer</td></tr>
+ </table>
+ <p style="margin-top:18px">核心设计原则：Controller 不负责模型治理；Service 不负责 HTTP 细节；超时与熔断策略通过独立组件管理。</p>
+ <div class="footer"><span>CODE DESIGN</span><span>15 / 20</span></div>
+</section>
+
+<!-- 16 -->
+<section class="slide dark">
+ <div class="kicker">15 / STREAMING FLOW</div>
+ <h2>主模型超时后的时序过程</h2>
+ <div class="timeline">
+  <div class="step"><b>1. Client → Controller</b><p>客户端发起 SSE 请求，服务端建立流式响应。</p></div>
+  <div class="step"><b>2. Controller → Service</b><p>Service 进行速率限制、熔断检查和并发隔离。</p></div>
+  <div class="step"><b>3. Service → Primary Provider</b><p>开始订阅主模型 Flux，同时启动 TTFT 计时。</p></div>
+  <div class="step"><b>4. TTFT Timeout</b><p>超过阈值仍没有有效内容块，取消主模型订阅。</p></div>
+  <div class="step"><b>5. Fallback Provider</b><p>在尚未输出有效内容的前提下调用备用模型。</p></div>
+  <div class="step"><b>6. First Content Chunk</b><p>备用模型返回首内容，停止 TTFT 计时并继续输出。</p></div>
+  <div class="step"><b>7. Stream Complete</b><p>正常完成，记录指标并释放资源。</p></div>
+ </div>
+ <div class="footer"><span>SEQUENCE FLOW</span><span>16 / 20</span></div>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+ <div class="kicker">16 / OBSERVABILITY</div>
+ <h2>可观测性：从系统是否可用，到模型是否好用</h2>
+ <div class="cols3">
+  <div class="card"><h3>延迟指标</h3><div class="metric">P95</div><p>TTFT、总生成耗时、Idle Gap、模型响应时间。</p></div>
+  <div class="card"><h3>稳定性指标</h3><div class="metric">%</div><p>错误率、慢调用率、熔断次数、Fallback 比例。</p></div>
+  <div class="card"><h3>资源指标</h3><div class="metric">N</div><p>活动流数量、Bulkhead 使用量、连接数、取消数。</p></div>
+ </div>
+ <h3 style="margin-top:25px">推荐监控面板</h3>
+ <table>
+  <tr><th>指标名称</th><th>监控意义</th><th>告警方向</th></tr>
+  <tr><td>llm_ttft_seconds</td><td>首内容延迟分布</td><td>P95/P99 突增</td></tr>
+  <tr><td>llm_stream_duration_seconds</td><td>完整生成耗时</td><td>长时间运行</td></tr>
+  <tr><td>llm_stream_active</td><td>活动流数量</td><td>并发接近上限</td></tr>
+  <tr><td>llm_fallback_total</td><td>主备降级次数</td><td>降级比例异常</td></tr>
+  <tr><td>llm_circuit_state</td><td>熔断状态</td><td>持续 OPEN</td></tr>
+ </table>
+ <p class="small">建议使用 Micrometer + Prometheus + Grafana。指标标签避免使用用户 ID、完整 Prompt 等高基数或敏感信息。</p>
+ <div class="footer"><span>OBSERVABILITY</span><span>17 / 20</span></div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+ <div class="kicker">17 / CONFIGURATION</div>
+ <h2>核心参数配置示例</h2>
+ <pre>llm:
+  primary-model: primary
+  fallback-model: fallback
+
+  timeout:
+    first-content: 5s
+    idle: 15s
+    generation: 120s
+
+  resilience:
+    rate-limiter:
+      limit-for-period: 30
+      limit-refresh-period: 1s
+
+    bulkhead:
+      max-concurrent-calls: 50
+      max-wait-duration: 0
+
+    ttft-breaker:
+      slow-call-duration-threshold: 5s
+      slow-call-rate-threshold: 50
+      sliding-window-size: 50
+      minimum-number-of-calls: 20
+      wait-duration-in-open-state: 30s</pre>
+ <p class="small">这是配置结构示例，并非 Spring AI 或 Resilience4j 的全部原生属性。需要在配置类中映射到对应实例；尤其 TTFT 慢调用统计需要针对首内容阶段设计，不能直接把完整 Flux 的生命周期作为 TTFT。</p>
+ <div class="footer"><span>CONFIGURATION</span><span>18 / 20</span></div>
+</section>
+
+<!-- 19 -->
+<section class="slide dark">
+ <div class="kicker">18 / PRODUCTION READINESS</div>
+ <h2>生产环境落地检查清单</h2>
+ <div class="cols">
+  <div>
+   <h3 class="accent">网络与代理</h3>
+   <p>关闭 Nginx SSE 响应缓冲；配置合理的 read timeout；验证 HTTP/1.1 长连接和代理链路。</p>
+   <h3 class="accent" style="margin-top:20px">资源生命周期</h3>
+   <p>客户端取消必须传播到上游；释放 Bulkhead 许可；避免线程池和连接池泄漏。</p>
+  </div>
+  <div>
+   <h3 class="accent">模型策略</h3>
+   <p>主备模型应明确能力、价格、上下文长度和地域差异；防止重复计费和无限重试。</p>
+   <h3 class="accent" style="margin-top:20px">压测与验证</h3>
+   <p>覆盖慢首 Token、流中断、模型限流、客户端断开、并发突增、备用模型失败等场景。</p>
+  </div>
+ </div>
+ <div class="rule" style="margin-top:22px"></div>
+ <pre>location /api/llm/stream {
+    proxy_pass http://spring-app;
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 180s;
+    proxy_send_timeout 180s;
+}</pre>
+ <p class="small">实际配置应结合入口网关、负载均衡器和模型服务的超时策略统一规划。</p>
+ <div class="footer"><span>PRODUCTION READINESS</span><span>19 / 20</span></div>
+</section>
+
+<!-- 20 -->
+<section class="slide dark">
+ <div class="kicker">19 / SUMMARY</div>
+ <h1>Build Resilient<br><span class="accent">AI Experiences.</span></h1>
+ <p class="subtitle">让模型慢下来时，系统仍然可控；让模型不可用时，业务仍然有退路。</p>
+ <div class="cols3" style="margin-top:35px">
+  <div class="card"><h3>Protect</h3><p>TTFT、Idle、Deadline 三层超时，RateLimiter 与 Bulkhead 保护资源。</p></div>
+  <div class="card"><h3>Recover</h3><p>独立 TTFT 熔断，主备模型降级，避免故障扩散。</p></div>
+  <div class="card"><h3>Observe</h3><p>以 TTFT、生成耗时、错误率、并发和降级率衡量服务质量。</p></div>
+ </div>
+ <div style="margin-top:auto">
+  <div class="rule"></div>
+  <h2>Thank You.</h2>
+  <p>Spring AI · SSE · Reactor · Resilience4j</p>
+ </div>
+ <div class="footer"><span>AI ENGINEERING / SOLUTION DESIGN</span><span>20 / 20</span></div>
+</section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="nav">
+ <button onclick="prev()">←</button>
+ <span id="counter">01 / 20</span>
+ <button onclick="next()">→</button>
+ <button onclick="toggleFull()">全屏</button>
+ <button onclick="showToc()">目录</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let current=0;
+function show(n){
+ current=Math.max(0,Math.min(slides.length-1,n));
+ slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+ document.getElementById('counter').textContent=
+  String(current+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+ document.getElementById('progress').style.width=((current+1)/slides.length*100)+'%';
+}
+function next(){show(current+1)}
+function prev(){show(current-1)}
+function toggleFull(){
+ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+ else document.exitFullscreen?.();
+}
+function showToc(){
+ const old=document.getElementById('tocOverlay');
+ if(old){old.remove();return}
+ const overlay=document.createElement('div');
+ overlay.id='tocOverlay';
+ Object.assign(overlay.style,{
+  position:'fixed',inset:'0',background:'rgba(3,12,20,.94)',
+  zIndex:100,color:'white',padding:'5vh 7vw',overflow:'auto'
+ });
+ overlay.innerHTML='<h2>演示目录</h2><div class="toc" id="tocGrid"></div><p style="margin-top:25px;color:#9DB0BD">点击页面标题跳转 · 按 ESC 关闭</p>';
+ document.body.appendChild(overlay);
+ const grid=overlay.querySelector('#tocGrid');
+ slides.forEach((s,i)=>{
+  const title=s.querySelector('h1,h2')?.innerText.replace(/\n/g,' ')||'页面 '+(i+1);
+  const b=document.createElement('button');
+  b.textContent=String(i+1).padStart(2,'0')+' · '+title;
+  b.onclick=()=>{show(i);overlay.remove()};
+  grid.appendChild(b);
+ });
+ overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
+}
+document.addEventListener('keydown',e=>{
+ if(document.getElementById('tocOverlay')){
+  if(e.key==='Escape')document.getElementById('tocOverlay').remove();
+  return;
+ }
+ if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+ if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+ if(e.key==='Home')show(0);
+ if(e.key==='End')show(slides.length-1);
+});
+let touchX=0;
+document.addEventListener('touchstart',e=>touchX=e.changedTouches[0].screenX);
+document.addEventListener('touchend',e=>{
+ const dx=e.changedTouches[0].screenX-touchX;
+ if(Math.abs(dx)>70){dx<0?next():prev()}
+});
+show(0);
+</script>
+</body>
+</html>

@@ -13,8 +13,17 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Smart Custom Service',
+					link: '/smart-customer-service'
+				},
+				{
+					label: 'Agent Resilience',
+					link: '/agent-resilience',
+				},
+				{
+					label: 'Architect in AI Era',
 					items: [
-						{ label: 'Solution Architecture', link: '/smart-customer-service' },
+						{ label: 'To Be or Not to Be', link: '/ai-era-arch/ai-era-architect' },
+						{ label: 'Self-Assessment', link: '/ai-era-arch/architect-assessment' },
 					],
 				},
 				{
