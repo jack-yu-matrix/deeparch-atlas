@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://jack-yu-matrix.github.io',
+    base: '/deeparch-atlas',
 	integrations: [
 		starlight({
 			title: 'DeepArch Atlas',
