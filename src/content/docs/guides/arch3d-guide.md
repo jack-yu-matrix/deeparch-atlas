@@ -8,7 +8,7 @@ description: how to use Arch3D scene builder for your doc
 ## 快速开始
 
 ### 点击直接打开
-[Arch3D Scene Builder](../../arch3d/arch3d-scene-builder.html)
+[Arch3D Scene Builder](../../arch3d/arch3d-scene-builder)
 
 arch3d.js 已经内联在 HTML 中，**无需网络、无需 CDN、无需本地服务器**。打开后会自动加载「最小示例」预设，右侧即可看到 3D 场景预览。
 
