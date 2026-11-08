@@ -13,10 +13,7 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Smart Custom Service',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Overview', slug: 'smart-customer-service/overview' },
-					],
+					items:[{ autogenerate: { directory: 'smart-customer-service' } }],
 				},
 				{
 					label: 'Reference',
