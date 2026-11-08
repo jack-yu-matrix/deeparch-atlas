@@ -14,13 +14,12 @@ export default defineConfig({
 				{
 					label: 'Smart Custom Service',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Overview', slug: 'smart-customer-service/overview' },
+						{ label: 'Solution Architecture', link: '/smart-customer-service' },
 					],
 				},
 				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
+					label: 'Guides',
+					items: [{ autogenerate: { directory: 'guides' } }],
 				},
 			],
 		}),
