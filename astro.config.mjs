@@ -12,10 +12,10 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/jack-yu-matrix/deeparch-atlas' }],
 			sidebar: [
 				{
-					label: 'Guides',
+					label: 'Smart Custom Service',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Overview', slug: 'smart-customer-service/overview' },
 					],
 				},
 				{
