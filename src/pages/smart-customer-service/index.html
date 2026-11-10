@@ -9090,15 +9090,8 @@ s.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(
 
 <script>
 // === arch3d.js inline (closing-script-tag escaped) ===
-/* arch3d.js — mall-cus-service 架构站的可交互 3D 舞台。
+/* arch3d.js — 架构可交互 3D 舞台。
  *
- * 无外部依赖：Canvas 2D 手写透视投影。视觉语言对齐 TraceMind 资金态势原型——深色舞台、发光球体、
- * 沿曲线流动的粒子、透视地面网格；交互：拖拽旋转、点击画布后滚轮缩放、双击复位、悬停提示、点击聚焦、
- * 模式切换时节点缓动到新坐标、时间轴状态机（熔断演示）。
- *
- * 场景数据由 scripts/architecture-pages 生成器写进页面：
- *   <div class="s3" data-scene="ID"></div><script type="application/json" id="s3-ID">{...}<\/script>
- * 离屏或标签页隐藏时暂停；prefers-reduced-motion 时关闭自动旋转并减速。
  */
 (function () {
   'use strict';
