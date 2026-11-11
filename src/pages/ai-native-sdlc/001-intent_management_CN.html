@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>从需求文档到 Intent Management｜AI-native SDLC</title>
+<style>
+:root{
+  --blue:#0070AD; --vblue:#12ABDB; --navy:#071D49; --purple:#2B0A3D;
+  --red:#F53B53; --green:#95E616; --ink:#14243A; --muted:#607086;
+  --paper:#F4F7FA; --line:#DCE5ED; --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Arial,"Noto Sans SC","Microsoft YaHei",sans-serif;background:#071D49;color:var(--ink)}
+body{overflow:hidden}
+.deck{height:100vh;width:100vw;position:relative}
+.slide{
+  position:absolute;inset:0;display:none;background:var(--paper);
+  padding:6.5vh 7vw 7vh;overflow:auto;
+}
+.slide.active{display:flex;flex-direction:column;animation:enter .35s ease}
+@keyframes enter{from{opacity:.35;transform:translateY(10px)}to{opacity:1;transform:none}}
+.slide.dark{background:linear-gradient(130deg,#061A40 0%,#073B69 60%,#0070AD 100%);color:white}
+.slide.white{background:#fff;color:var(--ink)}
+.kicker{font-size:clamp(12px,1.1vw,16px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:2.2vh}
+.dark .kicker{color:#75D8F1}
+h1{font-size:clamp(38px,5.1vw,76px);line-height:1.04;letter-spacing:-.035em;margin:0 0 2.6vh;font-weight:750;max-width:1100px}
+h2{font-size:clamp(30px,3.4vw,50px);line-height:1.08;letter-spacing:-.025em;margin:0 0 2.4vh}
+h3{font-size:clamp(17px,1.55vw,23px);margin:0 0 1vh}
+p,li{font-size:clamp(15px,1.35vw,20px);line-height:1.48}
+.lead{font-size:clamp(19px,2vw,29px);line-height:1.38;max-width:1000px;color:#40546A}
+.dark .lead{color:#E3F5FC}
+.sub{font-size:clamp(13px,1.1vw,16px);color:var(--muted)}
+.dark .sub{color:#B9D8E8}
+.rule{height:5px;width:74px;background:var(--vblue);margin:0 0 3vh}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 5px 18px rgba(12,43,75,.045)}
+.card.blue{border-top:5px solid var(--blue)}
+.card.cyan{border-top:5px solid var(--vblue)}
+.card.purple{border-top:5px solid var(--purple)}
+.card.red{border-top:5px solid var(--red)}
+.card.green{border-top:5px solid #75B900}
+.card p,.card li{font-size:clamp(13px,1.12vw,17px);margin:.4em 0}
+.card ul{padding-left:1.15em;margin:.5em 0}
+.tag{display:inline-block;border-radius:30px;padding:5px 10px;font-size:12px;font-weight:700;background:#E6F5FB;color:var(--blue);margin-bottom:10px}
+.bigquote{font-size:clamp(25px,3.3vw,48px);line-height:1.22;font-weight:700;max-width:1050px}
+.em{color:var(--vblue)}
+.dark .em{color:#76E0F4}
+.flow{display:flex;align-items:stretch;gap:12px;margin-top:2vh}
+.step{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.step strong{display:block;font-size:clamp(15px,1.35vw,20px);margin-bottom:7px}
+.step span{font-size:clamp(12px,1.05vw,15px);color:var(--muted);line-height:1.4;display:block}
+.arrow{align-self:center;color:var(--blue);font-size:25px;font-weight:bold}
+.pill{display:inline-block;padding:7px 12px;border-radius:7px;background:#EAF4F9;color:#145D85;font-size:13px;font-weight:700}
+.callout{border-left:5px solid var(--vblue);padding:12px 18px;background:#EAF6FA;border-radius:0 10px 10px 0;font-size:clamp(16px,1.45vw,21px);line-height:1.4}
+.dark .callout{background:rgba(255,255,255,.1);color:white}
+table{border-collapse:collapse;width:100%;font-size:clamp(12px,1.08vw,16px);background:white;border-radius:12px;overflow:hidden}
+th{background:#073B69;color:white;text-align:left;padding:13px}
+td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.35}
+tr:last-child td{border-bottom:0}
+.footer{position:absolute;bottom:2.2vh;left:7vw;right:7vw;display:flex;justify-content:space-between;align-items:center;color:#8190A2;font-size:11px;letter-spacing:.04em}
+.dark .footer{color:#B4D4E4}
+.controls{position:fixed;right:24px;bottom:18px;display:flex;gap:8px;z-index:20}
+.controls button{border:1px solid rgba(255,255,255,.35);background:#0B4773;color:#fff;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer}
+.controls button:hover{background:var(--vblue)}
+.progress{position:fixed;left:0;bottom:0;height:4px;background:var(--vblue);width:0;z-index:30;transition:width .25s}
+.counter{position:fixed;right:78px;bottom:29px;color:#d8eaf3;font-size:12px;z-index:20}
+.smallnote{font-size:12px;color:#6C7C8E;line-height:1.4}
+.dark .smallnote{color:#C2D8E6}
+.num{font-size:clamp(34px,4vw,58px);font-weight:750;color:var(--blue);line-height:1}
+.dark .num{color:#76E0F4}
+.split{display:grid;grid-template-columns:1.1fr .9fr;gap:5vw;align-items:center;flex:1}
+.metric{border-left:3px solid var(--vblue);padding-left:14px}
+.metric b{font-size:clamp(23px,2.6vw,38px);display:block}
+.metric span{font-size:13px;color:var(--muted)}
+.dark .metric span{color:#C4DBE8}
+@media(max-width:760px){
+ .slide{padding:5vh 6vw 9vh}
+ .g3,.g4,.g2{grid-template-columns:1fr}
+ .flow{flex-direction:column}
+ .arrow{transform:rotate(90deg);align-self:center}
+ .split{grid-template-columns:1fr}
+ .footer{left:6vw;right:6vw}
+}
+@media print{
+ body{overflow:visible;background:white}
+ .deck{height:auto}
+ .slide,.slide.active{position:relative;display:flex!important;width:100vw;height:56.25vw;page-break-after:always;overflow:hidden}
+ .controls,.counter,.progress{display:none}
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide dark active">
+  <div class="kicker">AI-NATIVE SDLC · OPERATING MODEL</div>
+  <div class="rule"></div>
+  <h1>从需求文档<br>到 <span class="em">Intent Management</span></h1>
+  <p class="lead">不是把 PRD 搬进 Git，而是重新设计业务意图如何被捕获、确认、沉淀，并持续传递给 AI 与工程团队。</p>
+  <div style="margin-top:auto;display:flex;gap:28px;flex-wrap:wrap">
+    <div class="metric"><b>Human-driven</b><span>人驱动业务意图</span></div>
+    <div class="metric"><b>AI-maintained</b><span>AI 维护结构化资产</span></div>
+    <div class="metric"><b>Git-governed</b><span>版本化与可审计</span></div>
+  </div>
+  <div class="footer"><span>STRATEGY PERSPECTIVE</span><span>01 / 10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">01 · THE REAL QUESTION</div>
+  <h2>Intent 不是新文档格式，<br>而是新的管理责任问题</h2>
+  <p class="lead">如果仍然要求 Product Manager 手工撰写、拆分、维护每一份 intent.md，我们只是把 Confluence 的工作搬到了 Git。</p>
+  <div class="grid g3" style="margin-top:3vh">
+    <div class="card blue"><div class="tag">PARADOX 01</div><h3>AI 需要结构化上下文</h3><p>需求越清晰、边界越明确，AI 越能稳定参与设计、开发与测试。</p></div>
+    <div class="card cyan"><div class="tag">PARADOX 02</div><h3>结构化依赖持续维护</h3><p>如果维护成本仍由人承担，文档债务只会换一种格式继续存在。</p></div>
+    <div class="card purple"><div class="tag">PARADOX 03</div><h3>系统复杂度持续增长</h3><p>跨域依赖、规则演进和历史决策，会让 Intent 库本身变成新的知识孤岛。</p></div>
+  </div>
+  <div class="callout" style="margin-top:3vh"><b>核心转变：</b>从「人维护 Intent」转向「人确认业务意图，AI 维护结构化 Intent」。</div>
+  <div class="footer"><span>FROM DOCUMENT-CENTRIC TO INTENT-CENTRIC</span><span>02 / 10</span></div>
+</section>
+
+<section class="slide white">
+  <div class="kicker">02 · DESIGN PRINCIPLE</div>
+  <h2>人负责判断，AI 负责组织</h2>
+  <p class="lead">把人的精力从格式化写作，转移到目标、取舍、约束和业务决策。</p>
+  <div class="flow">
+    <div class="step"><strong>01 · Human input</strong><span>业务目标、客户反馈、口头需求、运营信号、法规变化</span></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>02 · AI Product Agent</strong><span>澄清问题、检索已有知识、识别重复与冲突、生成 Intent 草案</span></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>03 · Human decision</strong><span>确认价值、范围、优先级、风险、约束与关键未知项</span></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>04 · Governed Intent</strong><span>版本化、审批、关联工程产物，成为下游 AI 的可信上下文</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:3vh">
+    <div class="card cyan"><h3>AI 可以自动化</h3><p>整理信息 · 生成草案 · 找关联 · 检查冲突 · 维护引用 · 提出更新</p></div>
+    <div class="card red"><h3>人必须保留决策权</h3><p>业务价值 · 目标取舍 · 范围承诺 · 合规边界 · 重要业务规则批准</p></div>
+  </div>
+  <div class="footer"><span>HUMAN-DRIVEN · AI-MAINTAINED</span><span>03 / 10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">03 · INFORMATION BOUNDARIES</div>
+  <h2>三类信息，三种生命周期</h2>
+  <p class="lead">不要让 Intent、Wiki 和工程规格争夺同一份内容的“唯一真相”。</p>
+  <div class="grid g3" style="margin-top:2vh">
+    <div class="card blue"><div class="tag">CHANGE CONTEXT</div><h3>Intent</h3><div class="num">WHY</div><p><b>变化的业务意图</b></p><ul><li>问题与期望结果</li><li>范围、约束、影响域</li><li>开放问题与决策</li></ul><p class="smallnote">生命周期：提出 → 审批 → 实现 → 归档</p></div>
+    <div class="card green"><div class="tag">SYSTEM CONTEXT</div><h3>Knowledge / Wiki</h3><div class="num">WHAT</div><p><b>长期系统知识</b></p><ul><li>领域模型与业务规则</li><li>架构、术语、数据字典</li><li>ADR、运维与排障知识</li></ul><p class="smallnote">生命周期：持续演进，由领域 Owner 维护</p></div>
+    <div class="card purple"><div class="tag">DELIVERY CONTEXT</div><h3>Engineering Specs</h3><div class="num">HOW</div><p><b>本次如何实现</b></p><ul><li>Spec、Plan、API / Schema</li><li>测试与验收用例</li><li>PR、发布与实施记录</li></ul><p class="smallnote">生命周期：随变更产生，保留为工程历史</p></div>
+  </div>
+  <div class="callout" style="margin-top:2.5vh"><b>边界原则：</b>Intent 是 Change 的上下文；Knowledge 是 System 的上下文；Spec 是 Delivery 的上下文。</div>
+  <div class="footer"><span>SEPARATE LIFECYCLES · CONNECT BY REFERENCES</span><span>04 / 10</span></div>
+</section>
+
+<section class="slide white">
+  <div class="kicker">04 · INTENT GRANULARITY</div>
+  <h2>一个 Intent，不等于一个 Jira Ticket</h2>
+  <p class="lead">以“可独立解释、决策和验收的业务变更”为主要粒度，而不是按开发任务或代码提交拆分。</p>
+  <div class="grid g3" style="margin-top:2vh">
+    <div class="card purple"><div class="tag">LEVEL 1</div><h3>Initiative</h3><p><b>战略目标 / 大型业务项目</b></p><p>例：建设统一订单履约体系</p><p class="smallnote">可跨多个业务域，持续数月</p></div>
+    <div class="card blue"><div class="tag">LEVEL 2 · DEFAULT</div><h3>Capability / Change</h3><p><b>可独立验收的业务变更</b></p><p>例：支持拆单、部分发货、物流轨迹查询</p><p class="smallnote">建议作为主要 Intent 粒度</p></div>
+    <div class="card cyan"><div class="tag">LEVEL 3</div><h3>Engineering Tasks</h3><p><b>具体工程执行项</b></p><p>例：增加 API、调整 Schema、补充测试</p><p class="smallnote">通常关联 Intent，不单独创建 Intent</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:2.5vh">
+    <div class="card"><h3>适合独立 Intent</h3><p>有独立业务目标、验收标准、决策边界，或跨多个系统 / 团队。</p></div>
+    <div class="card"><h3>通常不需要独立 Intent</h3><p>纯 UI 微调、字段改名、普通缺陷、单一实现任务。重大事故整改例外。</p></div>
+  </div>
+  <div class="footer"><span>BUSINESS CHANGE IS THE UNIT OF INTENT</span><span>05 / 10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">05 · TARGET INFORMATION ARCHITECTURE</div>
+  <h2>按业务域组织 Intent，<br>用 ID 连接跨域变更</h2>
+  <div class="split">
+    <div>
+      <div class="card blue" style="margin-bottom:12px">
+        <h3>Intent Repository</h3>
+        <p>Initiatives / Commerce / Payment / Fulfillment</p>
+        <p class="smallnote">每个 Intent 有唯一 ID、Owner、状态、关联域与系统</p>
+      </div>
+      <div class="card green" style="margin-bottom:12px">
+        <h3>Knowledge Base</h3>
+        <p>Domains / Architecture / ADR / Glossary / Runbooks</p>
+        <p class="smallnote">沉淀跨需求复用的稳定知识，不复制到每个 Intent</p>
+      </div>
+      <div class="card purple">
+        <h3>Engineering Repositories</h3>
+        <p>Specs / Plans / Tests / Code / PR / Release</p>
+        <p class="smallnote">在实际代码仓库中管理可执行工程产物</p>
+      </div>
+    </div>
+    <div>
+      <div class="tag">EXAMPLE · INTENT METADATA</div>
+      <div style="background:#0A2442;color:#E8F5FC;border-radius:12px;padding:22px;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap">id: PAY-002
+title: Partial Refund
+type: capability
+status: approved
+initiative: INIT-001
+
+domains:
+  - payment
+  - commerce
+
+affected_systems:
+  - payment-service
+  - order-service
+  - merchant-portal
+
+related_intents:
+  - COM-002</div>
+      <p class="smallnote" style="margin-top:12px">目录按业务域归属；唯一 ID 和显式引用表达关系。不要依赖目录层级推断业务依赖。</p>
+    </div>
+  </div>
+  <div class="footer"><span>DOMAIN-ALIGNED · REPOSITORY-INDEPENDENT</span><span>06 / 10</span></div>
+</section>
+
+<section class="slide white">
+  <div class="kicker">06 · GOVERNANCE & SOURCE OF TRUTH</div>
+  <h2>Confluence 不必消失，<br>但不能再有多个事实来源</h2>
+  <table>
+    <thead><tr><th>信息 / 管理对象</th><th>建议的权威来源</th><th>主要责任</th></tr></thead>
+    <tbody>
+      <tr><td>业务目标、本次范围、决策</td><td><b>Intent</b></td><td>Product Owner</td></tr>
+      <tr><td>当前业务规则、领域模型</td><td><b>Domain Knowledge</b></td><td>Domain Owner</td></tr>
+      <tr><td>当前架构与设计原则</td><td><b>Architecture / ADR</b></td><td>Architect / Tech Lead</td></tr>
+      <tr><td>本次技术实施方案</td><td><b>Spec / Plan</b></td><td>Engineering Lead</td></tr>
+      <tr><td>实际系统行为</td><td><b>Code + Tests</b></td><td>Engineering Team</td></tr>
+      <tr><td>负责人、优先级、工作状态</td><td><b>Jira / Issue Tracker</b></td><td>Delivery / PMO</td></tr>
+      <tr><td>面向人的知识入口与协作</td><td><b>Confluence / Wiki Portal</b></td><td>Knowledge Owner</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top:2vh"><b>推荐定位：</b>Git 管理可版本化的工程事实与 Intent；Confluence 提供发现、导航和协作体验；关键内容通过链接引用，不双重独立编辑。</div>
+  <div class="footer"><span>ONE AUTHORITATIVE SOURCE PER INFORMATION TYPE</span><span>07 / 10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">07 · AI PRODUCT AGENT OPERATING FLOW</div>
+  <h2>Intent 的产生可以自动化，<br>业务决策不能被默认自动化</h2>
+  <div class="grid g2" style="margin-top:1vh">
+    <div class="card cyan">
+      <h3>多源需求入口</h3>
+      <ul><li>业务方自然语言 / 会议纪要</li><li>客户反馈 / 客服工单</li><li>运营数据 / 业务目标偏差</li><li>Incident / 法规变化 / 技术债务</li></ul>
+    </div>
+    <div class="card blue">
+      <h3>AI Product Agent 工作流</h3>
+      <ol style="padding-left:1.2em"><li>搜索已有 Intent，识别重复</li><li>检索相关 Domain Knowledge</li><li>分析影响域、系统和依赖</li><li>提出澄清问题与冲突</li><li>生成 Intent Diff，而非覆盖历史</li><li>提交审批并关联下游产物</li></ol>
+    </div>
+  </div>
+  <div class="flow" style="margin-top:2.5vh">
+    <div class="step"><strong>Candidate</strong><span>AI 生成候选意图</span></div><div class="arrow">→</div>
+    <div class="step"><strong>Clarify</strong><span>补齐目标、约束、未知项</span></div><div class="arrow">→</div>
+    <div class="step"><strong>Approve</strong><span>业务负责人确认</span></div><div class="arrow">→</div>
+    <div class="step"><strong>Activate</strong><span>进入 Design / Build / Test</span></div>
+  </div>
+  <div class="footer"><span>AI PROPOSES · HUMAN DISPOSES</span><span>08 / 10</span></div>
+</section>
+
+<section class="slide white">
+  <div class="kicker">08 · CONTROL MODEL</div>
+  <h2>用轻量治理，避免 Intent 库变成新文档债务</h2>
+  <div class="grid g2" style="margin-top:1vh">
+    <div class="card blue"><h3>01 · Ownership</h3><p>每份知识有明确 Owner：Intent—Product；领域知识—Domain；架构—Architect；规范—Engineering。</p></div>
+    <div class="card cyan"><h3>02 · Change impact</h3><p>变更不仅检查代码和测试，也检查受影响的业务规则、架构文档和引用。</p></div>
+    <div class="card purple"><h3>03 · Lifecycle</h3><p>Intent 从 Draft 到 Approved、In Progress、Done、Superseded；历史保留，不把旧 Intent 当作当前事实。</p></div>
+    <div class="card red"><h3>04 · Knowledge health</h3><p>AI 定期检查失效链接、重复规则、文档与代码冲突、过期知识和无 Owner 内容。</p></div>
+  </div>
+  <div class="callout" style="margin-top:2.5vh"><b>关键机制：</b>规则发生变化时，创建新的变更记录；当前知识在受控流程中更新；历史 Intent 保留当时的目标与决策。</div>
+  <div class="footer"><span>GOVERNANCE BY OWNERSHIP, REVIEW AND TRACEABILITY</span><span>09 / 10</span></div>
+</section>
+
+<section class="slide white">
+  <div class="kicker">09 · RECOMMENDED WAY FORWARD</div>
+  <h2>从小范围试点，验证新的工作方式</h2>
+  <div class="grid g3" style="margin-top:2vh">
+    <div class="card"><div class="num">01</div><h3>建立最小边界</h3><p>选一个业务域；定义 Intent 粒度、元数据、状态和 Owner；明确 Intent / Knowledge / Spec 分工。</p></div>
+    <div class="card"><div class="num">02</div><h3>引入 AI Product Agent</h3><p>先接入一个需求入口；实现知识检索、重复识别、草案生成、问题澄清和审批 Diff。</p></div>
+    <div class="card"><div class="num">03</div><h3>连接工程交付</h3><p>把 Intent ID 贯穿 Spec、PR、测试和发布；验证上下文传递与知识更新闭环。</p></div>
+  </div>
+  <div style="margin-top:4vh">
+    <div class="bigquote">目标不是让每个人写更多 Markdown，<br>而是让每一次业务变化都能被<span class="em">准确理解、可靠决策、持续追溯</span>。</div>
+  </div>
+  <p class="smallnote" style="margin-top:3vh">设计原则：Human-driven · AI-maintained · Git-governed</p>
+  <div class="footer"><span>GET FROM DOCUMENTS TO A GOVERNED INTENT OPERATING MODEL</span><span>10 / 10</span></div>
+</section>
+
+</div>
+
+<div class="counter" id="counter">01 / 10</div>
+<div class="controls">
+  <button aria-label="上一页" onclick="go(-1)">‹</button>
+  <button aria-label="下一页" onclick="go(1)">›</button>
+</div>
+<div class="progress" id="progress"></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let current=0;
+function show(n){
+  current=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+  document.getElementById('counter').textContent=
+    String(current+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  document.getElementById('progress').style.width=
+    ((current+1)/slides.length*100)+'%';
+}
+function go(d){show(current+d)}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();go(1)}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
+  if(e.key==='Home')show(0);
+  if(e.key==='End')show(slides.length-1);
+});
+let touchX=null;
+document.addEventListener('touchstart',e=>touchX=e.changedTouches[0].screenX,{passive:true});
+document.addEventListener('touchend',e=>{
+  if(touchX===null)return;
+  let dx=e.changedTouches[0].screenX-touchX;
+  if(Math.abs(dx)>55)go(dx<0?1:-1);
+  touchX=null;
+},{passive:true});
+show(0);
+</script>
+</body>
+</html>

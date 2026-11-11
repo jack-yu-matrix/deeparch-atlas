@@ -1,0 +1,1182 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>以 Spec 为核心的 AI-Native SDLC｜企业转型蓝图</title>
+<style>
+:root {
+  --navy:#071B35; --navy2:#102B4C;
+  --blue:#0070AD; --cyan:#00A3E0; --cyan2:#65D3E8;
+  --ink:#172B4D; --muted:#53677F;
+  --pale:#EAF5FA; --pale2:#F3F7FA;
+  --white:#FFFFFF; --line:#D6E1E9;
+  --green:#16845B; --amber:#A96100; --red:#B33A3A;
+}
+* { box-sizing:border-box; }
+html,body {
+  margin:0; width:100%; height:100%;
+  font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;
+  background:#06152A; color:var(--ink); overflow:hidden;
+}
+button { font:inherit; }
+.deck {
+  width:100vw; height:100vh; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.slide {
+  width:min(96vw, calc(96vh * 16 / 9));
+  aspect-ratio:16/9; height:auto; max-height:94vh;
+  display:none; position:relative; overflow:hidden;
+  padding:4.5% 5.3% 4.2%;
+  background:#F6F9FB; box-shadow:0 18px 70px rgba(0,0,0,.35);
+}
+.slide.active { display:flex; flex-direction:column; }
+.slide.dark {
+  background:linear-gradient(135deg,#071B35 0%,#102F50 100%);
+  color:#FFFFFF;
+}
+.slide.dark::after {
+  content:""; position:absolute; right:-10%; top:-35%;
+  width:48%; height:90%; border:1px solid rgba(101,211,232,.18);
+  transform:rotate(35deg); pointer-events:none;
+}
+.slide.dark::before {
+  content:""; position:absolute; right:5%; bottom:-58%;
+  width:45%; height:100%; border:1px solid rgba(101,211,232,.13);
+  transform:rotate(35deg); pointer-events:none;
+}
+.topline {
+  color:var(--blue); font-size:clamp(9px,.85vw,13px);
+  font-weight:700; letter-spacing:1.5px;
+  margin-bottom:1.3%;
+}
+.dark .topline { color:var(--cyan2); }
+h1 {
+  font-size:clamp(30px,4.1vw,62px);
+  line-height:1.12; letter-spacing:-1.6px; margin-bottom:2%;
+}
+h2 {
+  font-size:clamp(23px,2.55vw,38px);
+  line-height:1.2; letter-spacing:-.7px; margin-bottom:1.4%;
+}
+h3 {
+  font-size:clamp(13px,1.25vw,18px);
+  line-height:1.3; margin-bottom:8px;
+}
+p,li,td,th {
+  font-size:clamp(10px,.94vw,14px); line-height:1.48;
+}
+p { margin-bottom:8px; }
+.subtitle {
+  color:#D5E6F1; font-size:clamp(15px,1.5vw,22px);
+  line-height:1.5; max-width:82%;
+}
+.lead {
+  color:#314D68; font-size:clamp(14px,1.25vw,19px);
+  line-height:1.5; max-width:96%; margin-bottom:2%;
+}
+.dark .lead { color:#D8E8F2; }
+.accent { color:var(--cyan); }
+.dark .accent { color:var(--cyan2); }
+.rule {
+  height:4px; width:58px; background:var(--cyan); margin:0 0 2.2%;
+}
+.content { flex:1; min-height:0; display:flex; flex-direction:column; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:2%; }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1.6%; }
+.grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2%; }
+.card {
+  background:#FFFFFF; border:1px solid var(--line);
+  border-radius:9px; padding:3.5%; min-width:0;
+}
+.card h3 { color:var(--blue); }
+.card p,.card li { color:#31465E; }
+.card ul { margin:5px 0 0; padding-left:17px; }
+.card li { margin-bottom:4px; }
+.card.darkcard { background:#102D4D; border:1px solid #31516E; }
+.card.darkcard h3 { color:#8EE2F0; }
+.card.darkcard p,.card.darkcard li { color:#E3EEF5; }
+.card.bluecard { background:#E7F4F9; border:1px solid #C3E2ED; }
+.card.bluecard h3 { color:#006A9E; }
+.card.bluecard p,.card.bluecard li { color:#263F58; }
+.kicker {
+  font-size:clamp(9px,.76vw,11px); font-weight:700;
+  letter-spacing:1px; color:#668098; margin-bottom:7px;
+}
+.metric {
+  font-size:clamp(24px,2.6vw,38px);
+  font-weight:700; color:var(--blue); line-height:1.1;
+}
+.metric-label { color:#425A72; font-size:clamp(10px,.86vw,13px); }
+.dark .metric { color:var(--cyan2); }
+.dark .metric-label { color:#D4E3ED; }
+.pill {
+  display:inline-block; border-radius:20px; padding:5px 9px;
+  margin:2px 3px 2px 0; font-size:clamp(9px,.76vw,11px);
+  font-weight:700; color:#07567D; background:#DDF2F8;
+}
+.pill.green { color:#126346; background:#DDF3E9; }
+.pill.amber { color:#865000; background:#FFF0D5; }
+.pill.red { color:#922F2F; background:#FBE4E4; }
+.dark .pill { color:#EAF9FC; background:#24516B; }
+.dark .pill.green { color:#DDF8EB; background:#17513F; }
+.dark .pill.amber { color:#FFF0D5; background:#694A1C; }
+.dark .pill.red { color:#FFE3E3; background:#652F39; }
+.callout {
+  background:#E6F4F9; border-left:4px solid var(--cyan);
+  padding:2.1% 2.5%; border-radius:4px;
+  color:#183A55; font-size:clamp(11px,1vw,15px);
+  line-height:1.5; margin-top:1.6%;
+}
+.dark .callout {
+  background:#153B59; color:#F0F7FB; border-left-color:var(--cyan2);
+}
+.muted { color:#63788D; }
+.dark .muted { color:#BBD0DF; }
+.small { font-size:clamp(9px,.76vw,11px); }
+.center { text-align:center; }
+table {
+  width:100%; border-collapse:collapse; background:#FFFFFF;
+  border-radius:7px; overflow:hidden;
+}
+th {
+  text-align:left; color:#FFFFFF; background:#12395B;
+  padding:9px 10px; font-weight:700;
+}
+td {
+  color:#263F58; padding:8px 10px;
+  border-bottom:1px solid #DCE6ED; vertical-align:top;
+}
+tr:nth-child(even) td { background:#F0F5F8; }
+.dark table { background:#FFFFFF; }
+.dark th { color:#FFFFFF; background:#12395B; }
+.dark td { color:#263F58; }
+.dark tr:nth-child(even) td { background:#F0F5F8; }
+.flow { display:flex; align-items:stretch; gap:7px; width:100%; min-height:0; }
+.flowbox {
+  flex:1; padding:12px 9px; border-radius:8px;
+  background:#E7F3F8; border:1px solid #C9E0EB;
+  text-align:center; display:flex; flex-direction:column;
+  justify-content:center; min-width:0;
+}
+.flowbox strong {
+  color:#075D8B; font-size:clamp(10px,.95vw,14px); margin-bottom:5px;
+}
+.flowbox span {
+  color:#405A70; font-size:clamp(9px,.76vw,11px); line-height:1.4;
+}
+.arrow {
+  align-self:center; color:var(--cyan);
+  font-size:clamp(17px,1.7vw,25px); font-weight:bold;
+}
+.stack { display:flex; flex-direction:column; gap:8px; }
+.layer {
+  border-radius:8px; padding:11px 15px;
+  border:1px solid #C9DDE8; background:#EAF4F8;
+}
+.layer strong { color:#075D8B; }
+.layer span { color:#334F67; }
+.layer.darklayer { background:#143B5A; border-color:#37627E; }
+.layer.darklayer strong { color:#8EE2F0; }
+.layer.darklayer span { color:#E3EEF5; }
+.footer {
+  position:absolute; bottom:2%; left:5.3%; right:5.3%;
+  display:flex; justify-content:space-between;
+  color:#73879A; font-size:clamp(8px,.68vw,10px);
+  letter-spacing:.3px; z-index:2;
+}
+.dark .footer { color:#A9C0D0; }
+.slide-no { color:var(--cyan); font-weight:700; }
+.dark .slide-no { color:var(--cyan2); }
+ul.compact { padding-left:17px; margin:5px 0; }
+ul.compact li { margin-bottom:5px; }
+.tagline {
+  font-size:clamp(11px,1.05vw,15px);
+  font-weight:700; color:#D4EAF3; letter-spacing:.4px;
+}
+.big-statement {
+  font-size:clamp(21px,2.35vw,35px);
+  font-weight:700; line-height:1.35;
+}
+.timeline { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.phase {
+  background:#FFFFFF; border-top:4px solid var(--cyan);
+  border-radius:7px; padding:12px;
+}
+.phase h3 { color:#075D8B; }
+.phase p { color:#31465E; }
+.phase .pill { background:#DDF2F8; color:#07567D; }
+.phase .small { color:#526A80; }
+.controls {
+  position:fixed; z-index:20; bottom:13px; right:18px;
+  display:flex; align-items:center; gap:8px;
+}
+.controls button {
+  border:1px solid rgba(255,255,255,.3); color:white;
+  background:#153B5A; padding:8px 13px;
+  border-radius:6px; cursor:pointer; font-size:12px;
+}
+.controls button:hover { background:#0070AD; }
+.progress {
+  position:fixed; z-index:30; bottom:0; left:0;
+  height:4px; width:100%; background:#203A52;
+}
+.progress > div {
+  height:100%; width:0; background:var(--cyan); transition:width .2s;
+}
+.counter { color:#D6E7F1; font-size:11px; margin-right:5px; }
+a { color:#0070AD; }
+@media(max-width:800px) {
+  .slide { width:100vw; height:100vh; max-height:none; aspect-ratio:auto; padding:6% 5% 8%; }
+  .grid4 { grid-template-columns:repeat(2,1fr); }
+  .grid3 { grid-template-columns:repeat(2,1fr); }
+  .flow { flex-wrap:wrap; }
+  .flowbox { min-width:27%; }
+  .timeline { grid-template-columns:repeat(2,1fr); }
+  .footer { bottom:5%; }
+}
+@media(max-width:520px) {
+  .grid2,.two-col-text { grid-template-columns:1fr; }
+  .grid3,.grid4 { grid-template-columns:1fr 1fr; }
+  .slide { overflow-y:auto; }
+  .footer { position:static; margin-top:15px; }
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- 01 封面 -->
+<section class="slide dark active">
+  <div class="topline">企业数字化转型蓝图</div>
+  <div style="margin-top:7%;max-width:86%">
+    <div class="tagline">AI 原生软件交付生命周期</div>
+    <h1 style="margin-top:3%">以 SPEC 为核心的<br><span class="accent">AI-NATIVE SDLC</span></h1>
+    <div class="rule"></div>
+    <p class="subtitle">从业务意图到可治理、可追踪、持续保持一致的工程交付体系</p>
+    <p style="color:#BBD0DF;font-size:clamp(12px,1.1vw,16px);margin-top:4%">
+      面向多系统、多业务域及微服务环境的企业级工程运营模式
+    </p>
+  </div>
+  <div style="position:absolute;right:8%;bottom:18%;width:24%;text-align:right">
+    <div style="font-size:clamp(36px,5vw,72px);font-weight:700;color:#65D3E8">01</div>
+    <div class="tagline">SPEC 作为<br>工程控制中枢</div>
+  </div>
+  <div class="footer"><span>AI-NATIVE SDLC｜企业转型蓝图</span><span class="slide-no">01</span></div>
+</section>
+
+<!-- 02 核心观点 -->
+<section class="slide">
+  <div class="topline">01 / 核心观点</div>
+  <h2>将人的工作重心从文档生产转向<span class="accent">决策治理</span></h2>
+  <p class="lead">目标不只是利用 AI 生成更多文档，而是建立可靠的运营模式：由 AI 生产和维护工程知识，人则专注于需要专业判断和责任承担的决策。</p>
+  <div class="grid3" style="margin-top:2%">
+    <div class="card">
+      <div class="kicker">01 / 生产</div>
+      <h3>AI 负责生产</h3>
+      <p>意图补全、需求分解、Spec、API 合约、测试场景、追踪关系和评审证据。</p>
+      <span class="pill">自动化创建</span>
+    </div>
+    <div class="card">
+      <div class="kicker">02 / 保障</div>
+      <h3>AI 负责质量保障</h3>
+      <p>一致性检查、政策校验、链接完整性、变更影响分析、实现偏差检测和证据收集。</p>
+      <span class="pill">自动化验证</span>
+    </div>
+    <div class="card">
+      <div class="kicker">03 / 治理</div>
+      <h3>人负责治理</h3>
+      <p>业务意图确认、架构权衡、风险接受、政策例外处理及最终审批。</p>
+      <span class="pill green">人类承担责任</span>
+    </div>
+  </div>
+  <div class="callout"><strong>北极星目标：</strong> 人不应该把时间花在维护追踪表、手工同步 Spec 或寻找评审上下文上，而应该专注于审阅证据和批准决策。</div>
+  <div class="footer"><span>以 SPEC 为核心的 AI-NATIVE SDLC</span><span class="slide-no">02</span></div>
+</section>
+
+<!-- 03 Claude Academy 参考模式 -->
+<section class="slide">
+  <div class="topline">02 / 参考实践</div>
+  <h2>Claude Academy 建立了 <span class="accent">Intent → Spec → Build</span> 模式</h2>
+  <p class="lead">Requirements and Design 课程描述了一种实践方式：产品负责人批准 intent.md 后，Claude 在组织 Skills 的约束下生成需求与设计 Spec。产品负责人审阅 AI 的结果，而不是亲自撰写整份文档。</p>
+  <div class="grid2" style="margin-top:1%">
+    <div class="card">
+      <h3>传统软件交付</h3>
+      <ul class="compact">
+        <li>业务想法由分析人员进行解释。</li>
+        <li>需求由专门团队整理和形式化。</li>
+        <li>设计由另一个团队再次解读。</li>
+        <li>不同阶段反复传递和转换上下文。</li>
+        <li>政策冲突往往在后期评审时才暴露。</li>
+      </ul>
+    </div>
+    <div class="card bluecard">
+      <h3>AI 原生软件交付</h3>
+      <ul class="compact">
+        <li>产品负责人创建并批准 intent.md。</li>
+        <li>Claude 加载 Intent 和组织 Skills。</li>
+        <li>AI 生成编号需求及设计 Spec。</li>
+        <li>明确标记关注事项和政策冲突。</li>
+        <li>产品负责人审阅、解决问题并批准。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>重要原则：</strong> Spec 必须足够完整，能够支撑工程团队开展计划和实施。AI 准备决策材料，但不取代人的审批责任。</div>
+  <p class="small muted" style="margin-top:1%">参考资料：<a href="https://academy.claude.com/courses/ai-native-sdlc-playbook/requirements-and-design" target="_blank">Claude Academy — AI-native SDLC Playbook：Requirements and Design</a></p>
+  <div class="footer"><span>参考模式｜ANTHROPIC CLAUDE ACADEMY</span><span class="slide-no">03</span></div>
+</section>
+
+<!-- 04 Claude Academy 工作流 -->
+<section class="slide">
+  <div class="topline">02 / 参考实践</div>
+  <h2>将参考工作流转化为<span class="accent">企业级自动化流水线</span></h2>
+  <div class="flow" style="margin-top:3%">
+    <div class="flowbox"><strong>01. Intent</strong><span>已批准的 intent.md<br>业务目标与约束</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>02. 上下文</strong><span>加载 Skills、政策、架构及代码库上下文</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>03. 生成</strong><span>生成编号需求和设计 Spec</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>04. 评审</strong><span>由相关政策负责人解决关注事项</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>05. 批准</strong><span>人工批准后进入工程规划</span></div>
+  </div>
+  <div class="grid2" style="margin-top:4%">
+    <div class="card">
+      <h3>应该标准化和自动化的内容</h3>
+      <ul class="compact">
+        <li>组织级 Prompt 或命令。</li>
+        <li>品牌、安全、合规和 UX Skills。</li>
+        <li>Intent 获批合并后自动触发生成。</li>
+        <li>Spec 通过 Pull Request 提交。</li>
+        <li>评审与审批记录纳入版本控制。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>必须保留人工责任的内容</h3>
+      <ul class="compact">
+        <li>Spec 是否真正解决了原始业务问题？</li>
+        <li>未回答的 Intent 问题是否得到解决或明确保留？</li>
+        <li>政策冲突是否由政策负责人处理？</li>
+        <li>技术风险是否可以接受？</li>
+        <li>Spec 是否可以进入工程规划阶段？</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>参考工作流｜企业自动化</span><span class="slide-no">04</span></div>
+</section>
+
+<!-- 05 Spec 组成 -->
+<section class="slide">
+  <div class="topline">03 / Spec 设计</div>
+  <h2>优秀的 Spec 是<span class="accent">可执行的决策记录</span>，而不只是设计文档</h2>
+  <p class="lead">Spec 应清晰表达问题、需求、设计选择、约束、待确认问题和验证方式，使工程团队能够据此制定计划并开展实施。</p>
+  <div class="grid3">
+    <div class="card">
+      <h3>需求 Requirements</h3>
+      <ul class="compact">
+        <li>稳定的需求 ID：R1、R2、R3……</li>
+        <li>可观察的行为和验收标准。</li>
+        <li>业务规则和数据需求。</li>
+        <li>非功能性需求。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>设计 Design</h3>
+      <ul class="compact">
+        <li>系统边界和职责。</li>
+        <li>API、事件及数据合约。</li>
+        <li>身份认证和访问控制。</li>
+        <li>性能、韧性和缓存策略。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>决策证据</h3>
+      <ul class="compact">
+        <li>Intent 约束及其满足方式。</li>
+        <li>明确保留的待确认问题。</li>
+        <li>关注事项及对应责任人。</li>
+        <li>验证状态和审批状态。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>设计规则：</strong> 对需求进行编号，使工程计划、代码变更、测试、缺陷和评审意见都能引用同一个稳定的需求标识。</div>
+  <div class="footer"><span>SPEC 设计原则</span><span class="slide-no">05</span></div>
+</section>
+
+<!-- 06 Spec 示例 -->
+<section class="slide">
+  <div class="topline">03 / Spec 设计</div>
+  <h2>Spec 示例：让需求具备<span class="accent">可测试性和可追踪性</span></h2>
+  <div class="grid2" style="grid-template-columns:1.1fr .9fr">
+    <div class="card">
+      <div class="kicker">示例 / 理赔状态自助查询</div>
+      <h3>需求 Requirements</h3>
+      <table>
+        <tr><th style="width:16%">ID</th><th>需求描述</th></tr>
+        <tr><td>R1</td><td>已登录客户可以查看每笔未结案理赔的状态、下一步操作和预计日期。</td></tr>
+        <tr><td>R2</td><td>状态限定为：已接收、审核中、已批准、已付款。</td></tr>
+        <tr><td>R3</td><td>响应内容只能包含约定的三个字段。</td></tr>
+        <tr><td>R4</td><td>客户看到的状态数据延迟不得超过 60 秒。</td></tr>
+      </table>
+      <h3 style="margin-top:4%">设计决策</h3>
+      <ul class="compact">
+        <li>claims-api 提供 GET /claims/{id}/status。</li>
+        <li>通过 Gateway JWT 进行身份认证。</li>
+        <li>claims-api 从 claims-core 读取数据。</li>
+        <li>Portal 使用 StatusPanel，并采用 60 秒缓存。</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h3>已处理的约束</h3>
+        <p><strong>个人信息：</strong>响应 Schema 排除标记为 PII 的字段。</p>
+        <p><strong>身份认证：</strong>沿用现有 Gateway JWT，不新增登录或角色。</p>
+      </div>
+      <div class="card">
+        <h3>待确认问题</h3>
+        <p>第三方定损人员是否需要访问？不预设答案，而是作为明确问题保留。</p>
+      </div>
+      <div class="card">
+        <h3>关注事项</h3>
+        <p><span class="pill amber">安全</span> 定损人员目前没有 Portal 账户。</p>
+        <p><span class="pill amber">合规</span> UX 日期展示与品牌对付款承诺的措辞存在冲突。</p>
+        <p><span class="pill amber">性能</span> claims-core 吞吐量需要进行负载测试。</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>示例｜需求级追踪</span><span class="slide-no">06</span></div>
+</section>
+
+<!-- 07 Spec 质量 -->
+<section class="slide">
+  <div class="topline">03 / Spec 设计</div>
+  <h2>在 Spec 进入 Build 之前建立<span class="accent">质量准入标准</span></h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Spec 完整性</h3>
+      <ul class="compact">
+        <li>每项需求都有稳定 ID。</li>
+        <li>每项需求都有验收标准。</li>
+        <li>明确系统归属和业务归属。</li>
+        <li>明确依赖关系和接口。</li>
+        <li>非功能约束具备可衡量指标。</li>
+        <li>待确认问题不会被悄悄丢弃。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Spec 一致性</h3>
+      <ul class="compact">
+        <li>Intent 约束映射到 Spec 设计决策。</li>
+        <li>应用架构规范和政策 Skills。</li>
+        <li>API 和事件合约之间没有冲突。</li>
+        <li>需求之间没有相互矛盾。</li>
+        <li>每项需求都定义了验证方式。</li>
+        <li>风险和例外都有明确责任人。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>Spec Definition of Ready：</strong>只有当完整性和一致性检查通过、未解决问题清晰可见、需要人工决策的事项已交给相应责任人时，Spec 才能进入正式审批。</div>
+  <div class="footer"><span>SPEC 质量准入标准</span><span class="slide-no">07</span></div>
+</section>
+
+<!-- 08 企业复杂性 -->
+<section class="slide">
+  <div class="topline">04 / 企业级挑战</div>
+  <h2>企业级变更很少局限于<span class="accent">单一系统边界</span></h2>
+  <p class="lead">一个业务目标可能横跨多个渠道、领域服务、传统平台、数据平台、外部供应商及共享能力。</p>
+  <div class="grid3">
+    <div class="card">
+      <h3>业务复杂性</h3>
+      <ul class="compact">
+        <li>一个 Intent 可能影响多个业务能力。</li>
+        <li>一个业务能力可能跨越多个系统。</li>
+        <li>业务归属与技术归属并不相同。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>技术复杂性</h3>
+      <ul class="compact">
+        <li>微服务和共享 API。</li>
+        <li>传统系统与异步事件。</li>
+        <li>分布式数据归属。</li>
+        <li>独立部署和发布生命周期。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>治理复杂性</h3>
+      <ul class="compact">
+        <li>安全、合规和架构控制。</li>
+        <li>多个评审和审批责任主体。</li>
+        <li>跨团队依赖和变更风险。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>反模式：</strong> 将业务 Intent 拆成多个彼此独立、按微服务划分的 Intent。这会割裂业务目标，削弱端到端追踪能力。</div>
+  <div class="footer"><span>企业级场景</span><span class="slide-no">08</span></div>
+</section>
+
+<!-- 09 三层 Intent -->
+<section class="slide">
+  <div class="topline">05 / Intent 与 Spec 架构</div>
+  <h2>将业务意图与<span class="accent">技术实现边界</span>分开组织</h2>
+  <p class="lead">采用分层模型：保留端到端业务目标，同时允许将其有序分解为业务能力和系统级实现 Spec。</p>
+  <div class="stack" style="margin-top:1%">
+    <div class="layer">
+      <strong>L1 / 业务 Intent</strong><br>
+      <span>变更原因、预期成果、业务价值、范围及企业级约束。</span>
+    </div>
+    <div style="text-align:center;color:#0086B8;font-weight:bold">↓ 分解为</div>
+    <div class="layer">
+      <strong>L2 / 业务能力或领域 Intent</strong><br>
+      <span>业务能力需求、领域规则、流程边界及业务责任归属。</span>
+    </div>
+    <div style="text-align:center;color:#0086B8;font-weight:bold">↓ 通过以下方式实现</div>
+    <div class="grid3">
+      <div class="layer"><strong>L3 / 系统 Spec A</strong><br><span>渠道 / Portal</span></div>
+      <div class="layer"><strong>L3 / 系统 Spec B</strong><br><span>领域服务</span></div>
+      <div class="layer"><strong>L3 / 系统 Spec C</strong><br><span>传统系统 / 数据平台</span></div>
+    </div>
+  </div>
+  <div class="callout"><strong>核心原则：</strong> Intent 按业务含义组织；Spec 按工程边界分解。两者通过显式追踪关系连接，而不是强行采用完全相同的层级结构。</div>
+  <div class="footer"><span>INTENT 分解模型</span><span class="slide-no">09</span></div>
+</section>
+
+<!-- 10 Spec 分类 -->
+<section class="slide">
+  <div class="topline">05 / Intent 与 Spec 架构</div>
+  <h2>通过三种互补的 Spec 保持<span class="accent">端到端一致性</span></h2>
+  <div class="grid3" style="margin-top:2%">
+    <div class="card">
+      <div class="kicker">业务能力视角</div>
+      <h3>Feature Spec</h3>
+      <p>描述端到端业务能力、用户旅程、业务流程、业务规则和验收标准。</p>
+      <p><strong>回答的问题：</strong>整体解决方案必须实现什么？</p>
+      <span class="pill">跨系统</span>
+    </div>
+    <div class="card">
+      <div class="kicker">工程实现视角</div>
+      <h3>System Spec</h3>
+      <p>描述特定系统需要进行的变更，包括数据、行为、组件、依赖和运行约束。</p>
+      <p><strong>回答的问题：</strong>这个系统具体需要改变什么？</p>
+      <span class="pill">系统归属</span>
+    </div>
+    <div class="card">
+      <div class="kicker">接口协作视角</div>
+      <h3>Contract Spec</h3>
+      <p>定义生产者和消费者共同遵守的 API、事件、Schema 和集成合约。</p>
+      <p><strong>回答的问题：</strong>协作系统之间必须达成什么约定？</p>
+      <span class="pill">独立版本管理</span>
+    </div>
+  </div>
+  <div class="callout"><strong>不要在每份 System Spec 中重复定义接口合约。</strong>为合约分配独立且稳定的身份和版本，再让生产者与消费者的 Spec 引用同一份合约。</div>
+  <div class="footer"><span>SPEC 分类体系</span><span class="slide-no">10</span></div>
+</section>
+
+<!-- 11 知识图谱 -->
+<section class="slide dark">
+  <div class="topline">06 / Git 原生知识图谱</div>
+  <h2>从文档层级结构转向<span class="accent">可追踪的知识图谱</span></h2>
+  <p class="lead">Markdown 继续作为人类可读的入口；稳定 ID、元数据和经过验证的链接，让整个仓库同时适合人和 AI Agent 使用。</p>
+  <div class="flow" style="margin-top:3%">
+    <div class="flowbox"><strong>INT</strong><span>业务 Intent</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>REQ</strong><span>需求</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>FSP</strong><span>Feature Spec</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>SSP</strong><span>System Spec</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>CTR</strong><span>接口合约</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>CODE / TEST</strong><span>实现与验证证据</span></div>
+  </div>
+  <div class="grid2" style="margin-top:4%">
+    <div class="card darkcard">
+      <h3>关系类型</h3>
+      <p><span class="accent">decomposes_to</span> · <span class="accent">realized_by</span> · <span class="accent">depends_on</span></p>
+      <p><span class="accent">conforms_to</span> · <span class="accent">verified_by</span> · <span class="accent">implemented_by</span></p>
+      <p><span class="accent">derived_from</span> · <span class="accent">supersedes</span></p>
+    </div>
+    <div class="card darkcard">
+      <h3>双向导航</h3>
+      <p>正向：Intent → Requirement → Spec → Contract → Code → Test。</p>
+      <p>反向：Code / PR / Test → Spec → Requirement → Intent。</p>
+      <p>反向链接和图谱索引可自动生成。</p>
+    </div>
+  </div>
+  <div class="footer"><span>GIT 作为事实来源｜MARKDOWN 作为知识入口</span><span class="slide-no">11</span></div>
+</section>
+
+<!-- 12 仓库结构 -->
+<section class="slide">
+  <div class="topline">06 / Git 原生知识图谱</div>
+  <h2>让仓库具备<span class="accent">导航能力、版本能力和机器可读性</span></h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>示例仓库结构</h3>
+      <pre style="font-size:clamp(9px,.8vw,12px);line-height:1.55;color:#23435E;white-space:pre-wrap">/intents
+  INT-001-claims-self-service.md
+/capabilities
+  CAP-001-claims-visibility.md
+/features
+  FSP-001-claims-status.md
+/systems
+  SSP-001-claims-api.md
+  SSP-002-claims-core.md
+/contracts
+  CTR-001-claims-status-api.yaml
+/tests
+  TST-001-claims-status.md
+/architecture
+  system-context.md
+  service-catalog.md</pre>
+    </div>
+    <div class="card">
+      <h3>元数据示例</h3>
+      <pre style="font-size:clamp(9px,.8vw,12px);line-height:1.5;color:#23435E;white-space:pre-wrap">---
+id: SSP-001
+type: system-spec
+version: 1.2
+system: claims-api
+derived_from:
+  - FSP-001
+implements:
+  - REQ-001
+  - REQ-004
+depends_on:
+  - SSP-002
+contracts:
+  - CTR-001
+verification:
+  - TST-001
+status: review
+---</pre>
+    </div>
+  </div>
+  <div class="callout"><strong>仓库设计规范：</strong>每个节点都有 ID；每份 Spec 都有上游追踪关系；每个关系都可以通过链接访问；每个链接都经过校验；每次变更都有记录。</div>
+  <p class="small muted">使用相对 Markdown 链接保证可移植性。Obsidian 可用于内部图谱探索；MkDocs 可用于共享文档门户。第一阶段不需要引入图数据库。</p>
+  <div class="footer"><span>仓库与元数据设计</span><span class="slide-no">12</span></div>
+</section>
+
+<!-- 13 Agent 自动化 -->
+<section class="slide">
+  <div class="topline">07 / AI 自动化架构</div>
+  <h2>围绕 <span class="accent">Spec 生命周期</span>建立 Agent 自动化流水线</h2>
+  <div class="flow" style="margin-top:2%">
+    <div class="flowbox"><strong>Intent Generator</strong><span>补全业务意图并识别信息缺口</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>Context Agent</strong><span>检索架构、政策和 Skills</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>Decomposition Agent</strong><span>识别业务能力、系统和依赖</span></div>
+  </div>
+  <div style="text-align:center;color:#0086B8;font-weight:bold;margin:1%">↓</div>
+  <div class="grid3">
+    <div class="card bluecard">
+      <h3>Feature Spec Agent</h3>
+      <p>生成端到端业务能力 Spec 和业务验收标准。</p>
+    </div>
+    <div class="card bluecard">
+      <h3>System Spec Agents</h3>
+      <p>利用对应系统上下文，并行生成系统级 Spec。</p>
+    </div>
+    <div class="card bluecard">
+      <h3>Contract Agent</h3>
+      <p>创建或更新 API、事件和 Schema 合约，并管理版本。</p>
+    </div>
+  </div>
+  <div style="text-align:center;color:#0086B8;font-weight:bold;margin:1%">↓</div>
+  <div class="grid2">
+    <div class="card">
+      <h3>一致性与追踪 Agent</h3>
+      <p>检查跨 Spec 一致性、政策约束、需求覆盖率、图谱链接和未解决依赖。</p>
+    </div>
+    <div class="card">
+      <h3>人工审批关卡</h3>
+      <p>整理证据、将决策路由给责任人，并在工程规划前记录正式批准。</p>
+    </div>
+  </div>
+  <div class="footer"><span>Agent 驱动的 Spec 生产流水线</span><span class="slide-no">13</span></div>
+</section>
+
+<!-- 14 上下文 -->
+<section class="slide">
+  <div class="topline">07 / AI 自动化架构</div>
+  <h2>通过<span class="accent">自动丰富上下文</span>减少人工架构文档维护</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>上下文来源</h3>
+      <ul class="compact">
+        <li>源代码和代码仓库结构。</li>
+        <li>API 规范及事件 Schema。</li>
+        <li>服务注册中心和归属元数据。</li>
+        <li>部署及基础设施配置。</li>
+        <li>架构决策记录。</li>
+        <li>现有 Spec、测试和运行证据。</li>
+        <li>组织 Skills 和政策规范。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>上下文丰富后的输出</h3>
+      <ul class="compact">
+        <li>系统与服务边界。</li>
+        <li>生产者和消费者依赖。</li>
+        <li>API 和事件关系。</li>
+        <li>数据归属及敏感性。</li>
+        <li>技术栈与运行约束。</li>
+        <li>系统 Owner 和政策相关方。</li>
+        <li>信息置信度及来源证明。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>运营原则：</strong>如果信息可以从权威工程系统自动提取，就不要要求团队再手工维护一份重复的架构目录。人负责确认边界、归属和关键决策，而不是反复录入机器可以识别的事实。</div>
+  <div class="footer"><span>上下文工程</span><span class="slide-no">14</span></div>
+</section>
+
+<!-- 15 增量更新 -->
+<section class="slide dark">
+  <div class="topline">08 / 变更驱动自动化</div>
+  <h2>只重新生成发生变化的内容：<span class="accent">Spec 增量演进</span></h2>
+  <p class="lead">一个 Intent 的变化应该触发基于图谱的影响分析，而不是重新生成所有下游文档。</p>
+  <div class="flow" style="margin-top:3%">
+    <div class="flowbox"><strong>Intent 变更</strong><span>提交 / 已批准更新</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>语义 Diff</strong><span>新增、修改、删除的需求</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>影响分析</strong><span>遍历受影响的图谱节点</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>选择性更新</strong><span>仅重新生成受影响的 Spec</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>评审与验证</strong><span>检查变更和证据</span></div>
+  </div>
+  <div class="grid2" style="margin-top:4%">
+    <div class="card darkcard">
+      <h3>变更影响逻辑</h3>
+      <p>新增需求 → 识别受影响的 Feature、System 和 Contract Spec。</p>
+      <p>修改需求 → 计算下游依赖及回归测试范围。</p>
+      <p>删除需求 → 识别可能失效的设计、代码和测试，交由审核。</p>
+    </div>
+    <div class="card darkcard">
+      <h3>生成上下文版本化</h3>
+      <p>记录 Intent 版本、需求版本、系统上下文版本、Prompt 版本和 Skills 版本。</p>
+      <p>保留 Spec 变更原因以及本次重新生成范围的证据。</p>
+    </div>
+  </div>
+  <div class="callout"><strong>预期成果：</strong>减少无意义的重复生成、无关评审变更和 PR 噪音，提高变更影响分析的可靠性。</div>
+  <div class="footer"><span>增量式 SPEC 管理</span><span class="slide-no">15</span></div>
+</section>
+
+<!-- 16 自动验证 -->
+<section class="slide">
+  <div class="topline">09 / 自动化质量保障</div>
+  <h2>在生成阶段和<span class="accent">仓库级别</span>使用同一套验证引擎</h2>
+  <p class="lead">Hook 提供即时反馈，CI 提供仓库级质量门禁。两者应调用同一验证器，而不是维护两套重复规则。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>生成阶段 Hook</h3>
+      <span class="pill">快速反馈</span>
+      <ul class="compact">
+        <li>在 Markdown Write 或 Edit 后触发。</li>
+        <li>验证当前文档语法和元数据。</li>
+        <li>检查直接链接及目标 ID。</li>
+        <li>将错误反馈给生成 Agent。</li>
+        <li>允许受控自动修复并重新验证。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>仓库级 CI</h3>
+      <span class="pill green">合并质量门禁</span>
+      <ul class="compact">
+        <li>验证所有变更节点及受影响节点。</li>
+        <li>检查失效链接和重复 ID。</li>
+        <li>检查图谱一致性和反向链接。</li>
+        <li>检查必要的追踪覆盖率。</li>
+        <li>对定义的严重问题阻止合并。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>实现模式：</strong>Claude Code Hook → knowledge-graph-validator → 可执行的验证报告 → Agent 自动修复 → Git PR → 仓库级 CI → 合并审批。可以使用 Stop Hook 做最终检查，但必须防止无限重试循环。</div>
+  <p class="small muted">实现参考：<a href="https://code.claude.com/docs/en/hooks" target="_blank">Claude Code Hooks 官方文档</a>。</p>
+  <div class="footer"><span>HOOK + VALIDATOR + CI</span><span class="slide-no">16</span></div>
+</section>
+
+<!-- 17 验证层级 -->
+<section class="slide">
+  <div class="topline">09 / 自动化质量保障</div>
+  <h2>建立从<span class="accent">链接完整性到交付证据</span>的渐进式验证</h2>
+  <table style="margin-top:2%">
+    <tr><th style="width:12%">级别</th><th style="width:27%">验证范围</th><th>典型检查内容</th><th style="width:19%">执行关卡</th></tr>
+    <tr><td><strong>L1</strong></td><td>Markdown 完整性</td><td>文件存在、相对路径有效、Markdown 链接可解析。</td><td><span class="pill green">Hook / CI</span></td></tr>
+    <tr><td><strong>L2</strong></td><td>身份完整性</td><td>目标 ID 与元数据匹配、ID 唯一、引用可解析。</td><td><span class="pill green">Hook / CI</span></td></tr>
+    <tr><td><strong>L3</strong></td><td>需求追踪完整性</td><td>Intent → Requirement → Feature Spec → System Spec 完整。</td><td><span class="pill amber">PR 关卡</span></td></tr>
+    <tr><td><strong>L4</strong></td><td>工程交付证据</td><td>Spec → Contract → Code → Test 关系有证据支撑。</td><td><span class="pill amber">PR / 发布</span></td></tr>
+  </table>
+  <div class="grid2" style="margin-top:3%">
+    <div class="card">
+      <h3>建议的验证器模块</h3>
+      <p>validate_links.py · validate_ids.py · validate_relationships.py</p>
+      <p>validate_traceability.py · generate_backlinks.py · generate_graph.py</p>
+    </div>
+    <div class="card">
+      <h3>渐进式执行策略</h3>
+      <p><strong>生成阶段：</strong>当前文档及直接引用对象。</p>
+      <p><strong>PR 阶段：</strong>变更文件和受影响的图谱节点。</p>
+      <p><strong>每日扫描：</strong>全量扫描、孤立节点、过期 Spec 和覆盖率。</p>
+    </div>
+  </div>
+  <div class="footer"><span>验证成熟度模型</span><span class="slide-no">17</span></div>
+</section>
+
+<!-- 18 评审上下文 -->
+<section class="slide">
+  <div class="topline">10 / 评审上下文工程</div>
+  <h2>在要求人做出决策前，先准备好<span class="accent">完整评审材料</span></h2>
+  <p class="lead">评审工作经常消耗在寻找上下文、对比文档和发现依赖关系上。AI 应自动准备这些证据。</p>
+  <div class="grid3">
+    <div class="card">
+      <h3>变更摘要</h3>
+      <ul class="compact">
+        <li>变更了什么，以及为什么变更。</li>
+        <li>哪些需求发生了变化。</li>
+        <li>哪些内容新增、删除或被替代。</li>
+        <li>哪些 Spec 和合约被重新生成。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>影响证据</h3>
+      <ul class="compact">
+        <li>受影响的系统和服务。</li>
+        <li>上游及下游依赖关系。</li>
+        <li>潜在回归测试范围。</li>
+        <li>政策和架构检查结果。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>待决策事项</h3>
+      <ul class="compact">
+        <li>需要决策的待确认问题。</li>
+        <li>相互冲突的约束和备选方案。</li>
+        <li>风险等级和信息置信度。</li>
+        <li>建议责任人和审批路径。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>评审原则：</strong>不要让评审者自己重新拼凑事情的来龙去脉。将变更、证据、未解决决策和潜在影响集中在一份 Review Context Package 中。</div>
+  <div class="footer"><span>评审体验设计</span><span class="slide-no">18</span></div>
+</section>
+
+<!-- 19 风险治理 -->
+<section class="slide">
+  <div class="topline">10 / 人类治理</div>
+  <h2>根据<span class="accent">风险和决策权限</span>路由评审，而不是根据文档数量</h2>
+  <div class="grid3">
+    <div class="card">
+      <span class="pill green">低风险</span>
+      <h3>自动化保障</h3>
+      <p>处于已批准模式内、成熟且可逆的变更。</p>
+      <p><strong>示例：</strong>文档更新、低影响配置变更及常规兼容性 Schema 变更。</p>
+      <p><strong>控制：</strong>自动化检查和正常团队流程。</p>
+    </div>
+    <div class="card">
+      <span class="pill amber">中风险</span>
+      <h3>责任人评审</h3>
+      <p>影响范围明确、局限于部分系统或运行环节的变更。</p>
+      <p><strong>示例：</strong>API 行为变化、数据转换和跨服务依赖。</p>
+      <p><strong>控制：</strong>相关 System Owner 或 Technical Lead 批准。</p>
+    </div>
+    <div class="card">
+      <span class="pill red">高风险</span>
+      <h3>正式决策</h3>
+      <p>涉及重大安全、合规、架构或业务风险的变更。</p>
+      <p><strong>示例：</strong>身份模型变更、敏感数据使用及重大领域边界调整。</p>
+      <p><strong>控制：</strong>指定政策负责人或架构委员会批准。</p>
+    </div>
+  </div>
+  <div class="callout"><strong>不可妥协的原则：</strong>AI 可以分类风险、推荐评审人和准备证据，但不能越权批准例外，也不能接受超出其授权范围的风险。</div>
+  <div class="footer"><span>基于风险的治理</span><span class="slide-no">19</span></div>
+</section>
+
+<!-- 20 漂移检测 -->
+<section class="slide dark">
+  <div class="topline">11 / 持续一致性管理</div>
+  <h2>通过<span class="accent">持续漂移检测</span>保持 Spec 与实现一致</h2>
+  <p class="lead">Spec 并不会在批准后就失去价值。它始终代表预期行为，必须持续与不断演进的实际实现进行比较。</p>
+  <div class="grid2" style="margin-top:2%">
+    <div class="card darkcard">
+      <h3>漂移信号</h3>
+      <ul class="compact">
+        <li>API Schema 与 Contract Spec 不一致。</li>
+        <li>代码行为不再满足某项 Requirement。</li>
+        <li>测试不再验证要求的验收标准。</li>
+        <li>部署配置违反设计约束。</li>
+        <li>服务依赖关系发生变化。</li>
+        <li>政策或 Skills 版本已经更新。</li>
+      </ul>
+    </div>
+    <div class="card darkcard">
+      <h3>漂移处理流程</h3>
+      <ul class="compact">
+        <li>检测并分类差异。</li>
+        <li>判断是设计变化还是实现变化。</li>
+        <li>分析受影响的需求和下游节点。</li>
+        <li>建议更新 Spec 或修正实现。</li>
+        <li>将重要决策交给对应责任人。</li>
+        <li>记录证据及获批的解决方案。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>关键区别：</strong>绝不能仅仅为了匹配现有代码，就自动重写 Spec。必须先判断是实现偏离了已批准设计，还是预期设计本身发生了合理变化。</div>
+  <div class="footer"><span>SPEC 与实际实现的持续一致性管理</span><span class="slide-no">20</span></div>
+</section>
+
+<!-- 21 学习闭环 -->
+<section class="slide">
+  <div class="topline">11 / 持续一致性管理</div>
+  <h2>将评审结果转化为<span class="accent">受控的组织学习闭环</span></h2>
+  <div class="flow" style="margin-top:3%">
+    <div class="flowbox"><strong>AI 提案</strong><span>生成 Spec、检查结果和建议</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>人工评审</strong><span>批准、修改、拒绝或升级</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>反馈收集</strong><span>记录决策及其原因</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>模式分析</strong><span>识别重复出现的问题</span></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><strong>受控更新</strong><span>改进 Skills、模板和政策</span></div>
+  </div>
+  <div class="grid2" style="margin-top:4%">
+    <div class="card">
+      <h3>有价值的反馈分类</h3>
+      <p>需求缺失 · 假设错误 · 政策冲突 · 架构问题 · 追踪不完整 · 影响评估不准确 · 验收标准不足。</p>
+    </div>
+    <div class="card">
+      <h3>学习机制的治理边界</h3>
+      <p>重复出现的评审反馈可以形成 Skill 或政策改进提案。单次评审意见不能悄悄变成组织级规则。组织知识的更新必须经过相应政策负责人批准。</p>
+    </div>
+  </div>
+  <div class="footer"><span>组织学习闭环</span><span class="slide-no">21</span></div>
+</section>
+
+<!-- 22 运营模式 -->
+<section class="slide">
+  <div class="topline">12 / 目标运营模式</div>
+  <h2>围绕<span class="accent">决策而非文档交接</span>重新设计角色职责</h2>
+  <table style="margin-top:2%">
+    <tr><th style="width:22%">角色</th><th>核心责任</th><th style="width:32%">AI 赋能后的工作重点</th></tr>
+    <tr><td><strong>Product Owner</strong></td><td>业务意图、目标、范围和优先级。</td><td>评审 Intent 和 Feature Spec；解决业务问题。</td></tr>
+    <tr><td><strong>业务 / 领域负责人</strong></td><td>业务规则和业务能力语义。</td><td>验证业务分解和需求含义。</td></tr>
+    <tr><td><strong>System Owner</strong></td><td>系统行为、依赖关系和交付就绪度。</td><td>评审 System Spec 和实现影响。</td></tr>
+    <tr><td><strong>架构负责人</strong></td><td>架构原则和跨系统权衡。</td><td>评审高影响设计决策和架构例外。</td></tr>
+    <tr><td><strong>政策负责人</strong></td><td>安全、合规、隐私和风险接受。</td><td>解决政策冲突并批准例外。</td></tr>
+    <tr><td><strong>工程团队</strong></td><td>实现、测试和运行质量。</td><td>根据已批准 Spec 制定计划，并关联代码及测试证据。</td></tr>
+  </table>
+  <div class="callout"><strong>组织变化：</strong>分析师和架构师并不会从流程中消失。他们的专业能力将更多投入复杂决策、政策解释、设计例外和质量保障，而不是重复生产文档。</div>
+  <div class="footer"><span>角色与责任模型</span><span class="slide-no">22</span></div>
+</section>
+
+<!-- 23 指标 -->
+<section class="slide">
+  <div class="topline">13 / 衡量体系</div>
+  <h2>衡量人工投入是否减少，以及<span class="accent">工程交付信心是否提高</span></h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="kicker">效率</div>
+      <div class="metric">↓</div>
+      <h3>人工投入</h3>
+      <p>人工创建和维护需求、Spec 及追踪关系所消耗的工时。</p>
+      <p>评审准备时间，以及 Intent 获批到 Spec 准备好评审之间的时间。</p>
+    </div>
+    <div class="card">
+      <div class="kicker">质量</div>
+      <div class="metric">↑</div>
+      <h3>追踪覆盖率</h3>
+      <p>需求关联到 Spec、实现和验证证据的比例。</p>
+      <p>变更影响分析准确率，以及孤立或过期节点的减少情况。</p>
+    </div>
+    <div class="card">
+      <div class="kicker">控制</div>
+      <div class="metric">↓</div>
+      <h3>返工与漂移</h3>
+      <p>工程计划开始后发生的需求返工。</p>
+      <p>Spec 与代码漂移及政策例外的发现和解决时间。</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:2%">
+    <div class="card bluecard">
+      <h3>Claude Academy 提出的领先指标</h3>
+      <p>从 Intent Commit 到对应 Spec Commit 的耗时。</p>
+    </div>
+    <div class="card bluecard">
+      <h3>Claude Academy 提出的滞后指标</h3>
+      <p>工程 Build 启动后的需求返工情况，可以通过首次 Engineering Plan Commit 之后发生的 Spec Commit 进行观察。</p>
+    </div>
+  </div>
+  <div class="footer"><span>以结果为导向的衡量体系</span><span class="slide-no">23</span></div>
+</section>
+
+<!-- 24 技术蓝图 -->
+<section class="slide">
+  <div class="topline">14 / 技术蓝图</div>
+  <h2>从轻量级的 <span class="accent">Git 原生架构</span>开始</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>推荐基础技术体系</h3>
+      <ul class="compact">
+        <li><strong>知识载体：</strong>Markdown + YAML 元数据。</li>
+        <li><strong>版本管理：</strong>Git 仓库和 Pull Request。</li>
+        <li><strong>验证：</strong>由 Hook 和 CI 调用统一 Python 验证器。</li>
+        <li><strong>Agent 编排：</strong>Claude Code、Skills 和专业化 Subagents。</li>
+        <li><strong>上下文：</strong>源代码仓库、OpenAPI、服务注册中心和架构记录。</li>
+        <li><strong>可视化：</strong>Mermaid、Obsidian 和 MkDocs。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>按需扩展的能力</h3>
+      <ul class="compact">
+        <li><strong>元数据查询：</strong>PostgreSQL 管理结构化图谱关系。</li>
+        <li><strong>企业服务目录：</strong>Backstage 或同类服务目录。</li>
+        <li><strong>图谱分析：</strong>查询复杂度足够高时引入图数据库。</li>
+        <li><strong>可观测性：</strong>CI 遥测、漂移报告和覆盖率仪表板。</li>
+        <li><strong>治理：</strong>审批记录、政策版本和审计证据。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>架构原则：</strong>不要仅仅因为方案叫 Knowledge Graph 就立即引入图数据库。第一阶段使用稳定 ID、元数据、相对链接和自动仓库扫描即可。只有当规模和查询需求真正需要时，再增加基础设施。</div>
+  <div class="footer"><span>实施技术架构</span><span class="slide-no">24</span></div>
+</section>
+
+<!-- 25 路线图 -->
+<section class="slide">
+  <div class="topline">15 / 实施路线图</div>
+  <h2>渐进式落地：先验证完整的 <span class="accent">Spec 生命周期</span>，再扩展到企业级</h2>
+  <div class="timeline" style="margin-top:3%">
+    <div class="phase">
+      <div class="kicker">阶段 1</div>
+      <h3>基础建设</h3>
+      <p>定义 Intent 和 Spec 模板、稳定 ID、元数据 Schema 及核心 Skills。</p>
+      <span class="pill">第 1–3 周</span>
+      <p class="small"><strong>交付物：</strong>Git 原生 Spec 基础体系。</p>
+    </div>
+    <div class="phase">
+      <div class="kicker">阶段 2</div>
+      <h3>自动生成</h3>
+      <p>建立 Intent 到 Spec 的流水线和人工评审流程。</p>
+      <span class="pill">第 4–6 周</span>
+      <p class="small"><strong>交付物：</strong>可供评审的 Spec PR。</p>
+    </div>
+    <div class="phase">
+      <div class="kicker">阶段 3</div>
+      <h3>追踪能力</h3>
+      <p>实现图谱链接、反向链接、验证器、Hooks 和 CI 门禁。</p>
+      <span class="pill">第 7–10 周</span>
+      <p class="small"><strong>交付物：</strong>经过验证的知识图谱。</p>
+    </div>
+    <div class="phase">
+      <div class="kicker">阶段 4</div>
+      <h3>企业级扩展</h3>
+      <p>引入系统分解、接口合约、影响分析和风险路由。</p>
+      <span class="pill">第 11–15 周</span>
+      <p class="small"><strong>交付物：</strong>多系统协同工作流。</p>
+    </div>
+    <div class="phase">
+      <div class="kicker">阶段 5</div>
+      <h3>持续保障</h3>
+      <p>实现漂移检测、评审分析、反馈学习和管理仪表板。</p>
+      <span class="pill">第 16 周起</span>
+      <p class="small"><strong>交付物：</strong>持续保持一致的 SDLC。</p>
+    </div>
+  </div>
+  <div class="callout"><strong>Pilot 建议：</strong>选择一个跨越少量系统的业务能力，确保代码和 API 证据容易获取，同时具有足够实际意义、但治理复杂度仍然可控。</div>
+  <div class="footer"><span>转型实施路线图</span><span class="slide-no">25</span></div>
+</section>
+
+<!-- 26 目标状态 -->
+<section class="slide dark">
+  <div class="topline">16 / 目标状态</div>
+  <h2>从以文档为中心的交付，转向<span class="accent">持续治理的工程知识体系</span></h2>
+  <div class="grid3" style="margin-top:4%">
+    <div class="card darkcard">
+      <div class="metric">01</div>
+      <h3>Intent 驱动</h3>
+      <p>业务目标始终是目的和优先级的来源。</p>
+    </div>
+    <div class="card darkcard">
+      <div class="metric">02</div>
+      <h3>Spec 为核心</h3>
+      <p>需求、设计、合约和验证通过稳定的 Spec 身份连接。</p>
+    </div>
+    <div class="card darkcard">
+      <div class="metric">03</div>
+      <h3>图谱互联</h3>
+      <p>每项重要变更都可以跨业务域、系统、代码和测试追踪。</p>
+    </div>
+    <div class="card darkcard">
+      <div class="metric">04</div>
+      <h3>AI 自动运营</h3>
+      <p>生成、验证、影响分析和评审准备均实现自动化。</p>
+    </div>
+    <div class="card darkcard">
+      <div class="metric">05</div>
+      <h3>证据驱动</h3>
+      <p>决策由来源信息、政策检查和工程证据支撑。</p>
+    </div>
+    <div class="card darkcard">
+      <div class="metric">06</div>
+      <h3>人类治理</h3>
+      <p>人始终对业务意图、例外、风险和最终审批负责。</p>
+    </div>
+  </div>
+  <div style="margin-top:4%;text-align:center">
+    <div class="big-statement">目标不是生成更多 AI 文档。</div>
+    <div class="big-statement accent">目标是减少人工维护，让人做出更好的决策。</div>
+  </div>
+  <div class="footer"><span>以 SPEC 为核心的 AI-NATIVE SDLC｜企业转型蓝图</span><span class="slide-no">26</span></div>
+</section>
+
+</div>
+
+<div class="controls">
+  <span class="counter" id="counter">1 / 26</span>
+  <button onclick="prevSlide()">← 上一页</button>
+  <button onclick="nextSlide()">下一页 →</button>
+  <button onclick="toggleFull()">全屏</button>
+</div>
+<div class="progress"><div id="progressBar"></div></div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+
+function showSlide(index) {
+  current = Math.max(0, Math.min(index, slides.length - 1));
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+  document.getElementById('counter').textContent =
+    `${current + 1} / ${slides.length}`;
+  document.getElementById('progressBar').style.width =
+    `${((current + 1) / slides.length) * 100}%`;
+}
+function nextSlide() { showSlide(current + 1); }
+function prevSlide() { showSlide(current - 1); }
+function toggleFull() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+}
+document.addEventListener('keydown', event => {
+  if (['ArrowRight','PageDown',' '].includes(event.key)) {
+    event.preventDefault(); nextSlide();
+  }
+  if (['ArrowLeft','PageUp'].includes(event.key)) {
+    event.preventDefault(); prevSlide();
+  }
+  if (event.key === 'Home') showSlide(0);
+  if (event.key === 'End') showSlide(slides.length - 1);
+});
+showSlide(0);
+</script>
+</body>
+</html>

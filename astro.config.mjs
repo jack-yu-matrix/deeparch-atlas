@@ -20,6 +20,13 @@ export default defineConfig({
 					link: '/agent-resilience',
 				},
 				{
+					label: 'AI Native SDLC',
+					items: [
+						{ label: 'Capture as intent.md', link: '/ai-native-sdlc/001-intent_management_CN' },
+						{ label: 'Requirements and design', link: '/ai-native-sdlc/002-spec_management_CN' },
+					],
+				},
+				{
 					label: 'Architect in AI Era',
 					items: [
 						{ label: 'To Be or Not to Be', link: '/ai-era-arch/ai-era-architect' },
